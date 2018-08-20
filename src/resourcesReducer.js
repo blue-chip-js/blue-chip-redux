@@ -31,7 +31,8 @@ export default function resourcesReducer(state = initialState, action) {
         _initializeResource(draft, resourceType);
 
         Object.entries(resourcesById).forEach(
-          ([id, resource]) => (draft[resourceType][id] = resource)
+          ([id, resource], __index) =>
+            (draft[resourceType][id] = {...resource, __index})
         );
         break;
       case "REMOVE_RESOURCE_BY_ID":

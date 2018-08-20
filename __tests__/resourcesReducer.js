@@ -6,11 +6,21 @@ import normalizedJsonApiTasksPayload
 import hugeNormalizedJsonApiChecklistsPayload
   from "../__testHelpers__/fixtures/hugeNormalizedJsonApiChecklistsPayload";
 
-describe("post reducer", () => {
+const addIndex = resources =>
+  Object.entries(resources).reduce((resources, [id, resource], __index) => {
+    resources[id] = {
+      ...resource,
+      __index
+    };
+    return resources;
+  }, {});
+
+describe("resources reducer", () => {
   describe("UPDATE_RESOURCES", () => {
     it("should return the initial state", () => {
       expect(resourcesReducer(undefined, {})).toEqual({});
     });
+
     it("should update the store given a UPDATE_RESOURCES action", () => {
       const checklistsMergeResourcesAction = {
         resourceType: "tasks",
@@ -18,9 +28,10 @@ describe("post reducer", () => {
         type: "UPDATE_RESOURCES"
       };
       expect(resourcesReducer({}, checklistsMergeResourcesAction)).toEqual({
-        tasks: normalizedJsonApiChecklistsPayload
+        tasks: addIndex(normalizedJsonApiChecklistsPayload)
       });
     });
+
     it("should handle multiple resources given multiple UPDATE_RESOURCES", () => {
       const checklistsMergeResourcesAction = {
         resourceType: "checklists",
@@ -39,10 +50,11 @@ describe("post reducer", () => {
       expect(
         resourcesReducer(firstUpdatedState, tasksMergeResourcesAction)
       ).toEqual({
-        checklists: normalizedJsonApiChecklistsPayload,
-        tasks: normalizedJsonApiTasksPayload
+        checklists: addIndex(normalizedJsonApiChecklistsPayload),
+        tasks: addIndex(normalizedJsonApiTasksPayload)
       });
     });
+
     it("should handle multiple updates with the same resources", () => {
       const checklistsMergeResourcesAction = {
         resourceType: "checklists",
@@ -55,11 +67,13 @@ describe("post reducer", () => {
       );
       expect(
         resourcesReducer(firstUpdatedState, checklistsMergeResourcesAction)
-      ).toEqual({checklists: normalizedJsonApiChecklistsPayload});
+      ).toEqual({checklists: addIndex(normalizedJsonApiChecklistsPayload)});
     });
+
     it("benchmark small payload", async () => {
       await smallPayloadReducerCall();
     });
+
     it("benchmark huge payload", async () => {
       await hugePayloadReducerCall();
     });
