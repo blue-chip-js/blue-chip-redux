@@ -13,8 +13,8 @@ const buildRelationships = resource => {
   }, {});
 };
 
-const updateResources = (mutator, resourceType, resourcesById) => {
-  mutator({type: "UPDATE_RESOURCES", resourceType, resourcesById});
+const updateResources = (mutator, resourceType, resourcesById, index) => {
+  mutator({type: "UPDATE_RESOURCES", resourceType, resourcesById, index});
 };
 
 const updateResource = (
@@ -60,6 +60,92 @@ var actions = /*#__PURE__*/Object.freeze({
   removeResource: removeResource,
   clearResources: clearResources
 });
+
+function generatePatches(state, basepath, patches, inversePatches, baseValue, resultValue) {
+    if (patches) if (Array.isArray(baseValue)) generateArrayPatches(state, basepath, patches, inversePatches, baseValue, resultValue);else generateObjectPatches(state, basepath, patches, inversePatches, baseValue, resultValue);
+}
+
+function generateArrayPatches(state, basepath, patches, inversePatches, baseValue, resultValue) {
+    var shared = Math.min(baseValue.length, resultValue.length);
+    for (var i = 0; i < shared; i++) {
+        if (state.assigned[i] && baseValue[i] !== resultValue[i]) {
+            var path = basepath.concat(i);
+            patches.push({ op: "replace", path: path, value: resultValue[i] });
+            inversePatches.push({ op: "replace", path: path, value: baseValue[i] });
+        }
+    }
+    if (shared < resultValue.length) {
+        // stuff was added
+        for (var _i = shared; _i < resultValue.length; _i++) {
+            var _path = basepath.concat(_i);
+            patches.push({ op: "add", path: _path, value: resultValue[_i] });
+        }
+        inversePatches.push({
+            op: "replace",
+            path: basepath.concat("length"),
+            value: baseValue.length
+        });
+    } else if (shared < baseValue.length) {
+        // stuff was removed
+        patches.push({
+            op: "replace",
+            path: basepath.concat("length"),
+            value: resultValue.length
+        });
+        for (var _i2 = shared; _i2 < baseValue.length; _i2++) {
+            var _path2 = basepath.concat(_i2);
+            inversePatches.push({ op: "add", path: _path2, value: baseValue[_i2] });
+        }
+    }
+}
+
+function generateObjectPatches(state, basepath, patches, inversePatches, baseValue, resultValue) {
+    each(state.assigned, function (key, assignedValue) {
+        var origValue = baseValue[key];
+        var value = resultValue[key];
+        var op = !assignedValue ? "remove" : key in baseValue ? "replace" : "add";
+        if (origValue === baseValue && op === "replace") return;
+        var path = basepath.concat(key);
+        patches.push(op === "remove" ? { op: op, path: path } : { op: op, path: path, value: value });
+        inversePatches.push(op === "add" ? { op: "remove", path: path } : op === "remove" ? { op: "add", path: path, value: origValue } : { op: "replace", path: path, value: origValue });
+    });
+}
+
+function applyPatches(draft, patches) {
+    var _loop = function _loop(i) {
+        var patch = patches[i];
+        if (patch.path.length === 0 && patch.op === "replace") {
+            draft = patch.value;
+        } else {
+            var path = patch.path.slice();
+            var key = path.pop();
+            var base = path.reduce(function (current, part) {
+                if (!current) throw new Error("Cannot apply patch, path doesn't resolve: " + patch.path.join("/"));
+                return current[part];
+            }, draft);
+            if (!base) throw new Error("Cannot apply patch, path doesn't resolve: " + patch.path.join("/"));
+            switch (patch.op) {
+                case "replace":
+                case "add":
+                    // TODO: add support is not extensive, it does not support insertion or `-` atm!
+                    base[key] = patch.value;
+                    break;
+                case "remove":
+                    if (Array.isArray(base)) {
+                        if (key === base.length - 1) base.length -= 1;else throw new Error("Remove can only remove the last key of an array, index: " + key + ", length: " + base.length);
+                    } else delete base[key];
+                    break;
+                default:
+                    throw new Error("Unsupported patch operation: " + patch.op);
+            }
+        }
+    };
+
+    for (var i = 0; i < patches.length; i++) {
+        _loop(i);
+    }
+    return draft;
+}
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
   return typeof obj;
@@ -133,13 +219,15 @@ function has(thing, prop) {
 }
 
 // given a base object, returns it if unmodified, or return the changed cloned if modified
-function finalize(base) {
+function finalize(base, path, patches, inversePatches) {
     if (isProxy(base)) {
         var state = base[PROXY_STATE];
         if (state.modified === true) {
             if (state.finalized === true) return state.copy;
             state.finalized = true;
-            return finalizeObject(useProxies ? state.copy : state.copy = shallowCopy(base), state);
+            var result = finalizeObject(useProxies ? state.copy : state.copy = shallowCopy(base), state, path, patches, inversePatches);
+            generatePatches(state, path, patches, inversePatches, state.base, result);
+            return result;
         } else {
             return state.base;
         }
@@ -148,10 +236,15 @@ function finalize(base) {
     return base;
 }
 
-function finalizeObject(copy, state) {
+function finalizeObject(copy, state, path, patches, inversePatches) {
     var base = state.base;
     each(copy, function (prop, value) {
-        if (value !== base[prop]) copy[prop] = finalize(value);
+        if (value !== base[prop]) {
+            // if there was an assignment on this property, we don't need to generate
+            // patches for the subtree
+            var _generatePatches = patches && !has(state.assigned, prop);
+            copy[prop] = finalize(value, _generatePatches && path.concat(prop), _generatePatches && patches, inversePatches);
+        }
     });
     return freeze(copy);
 }
@@ -213,7 +306,8 @@ each(objectTraps, function (key, fn) {
 
 function createState(parent, base) {
     return {
-        modified: false,
+        modified: false, // this tree is modified (either this object or one of it's children)
+        assigned: {}, // true: value was assigned to these props, false: was removed
         finalized: false,
         parent: parent,
         base: base,
@@ -244,6 +338,8 @@ function get$1(state, prop) {
 }
 
 function set$1(state, prop, value) {
+    // TODO: optimize
+    state.assigned[prop] = true;
     if (!state.modified) {
         if (prop in state.base && is(state.base[prop], value) || has(state.proxies, prop) && state.proxies[prop] === value) return true;
         markChanged(state);
@@ -253,6 +349,7 @@ function set$1(state, prop, value) {
 }
 
 function deleteProperty(state, prop) {
+    state.assigned[prop] = false;
     markChanged(state);
     delete state.copy[prop];
     return true;
@@ -280,15 +377,15 @@ function markChanged(state) {
 }
 
 // creates a proxy for plain objects / arrays
-function createProxy(parentState, base) {
+function createProxy(parentState, base, key) {
     if (isProxy(base)) throw new Error("Immer bug. Plz report.");
-    var state = createState(parentState, base);
+    var state = createState(parentState, base, key);
     var proxy = Array.isArray(base) ? Proxy.revocable([state], arrayTraps) : Proxy.revocable(state, objectTraps);
     proxies.push(proxy);
     return proxy.proxy;
 }
 
-function produceProxy(baseState, producer) {
+function produceProxy(baseState, producer, patchListener) {
     if (isProxy(baseState)) {
         // See #100, don't nest producers
         var returnValue = producer.call(baseState, baseState);
@@ -296,6 +393,8 @@ function produceProxy(baseState, producer) {
     }
     var previousProxies = proxies;
     proxies = [];
+    var patches = patchListener && [];
+    var inversePatches = patchListener && [];
     try {
         // create proxy for root
         var rootProxy = createProxy(undefined, baseState);
@@ -312,13 +411,18 @@ function produceProxy(baseState, producer) {
             // Should we just throw when returning a proxy which is not the root, but a subset of the original state?
             // Looks like a wrongly modeled reducer
             result = finalize(_returnValue);
+            if (patches) {
+                patches.push({ op: "replace", path: [], value: result });
+                inversePatches.push({ op: "replace", path: [], value: baseState });
+            }
         } else {
-            result = finalize(rootProxy);
+            result = finalize(rootProxy, [], patches, inversePatches);
         }
         // revoke all proxies
         each(proxies, function (_, p) {
             return p.revoke();
         });
+        patchListener && patchListener(patches, inversePatches);
         return result;
     } finally {
         proxies = previousProxies;
@@ -333,6 +437,7 @@ var states = null;
 function createState$1(parent, proxy, base) {
     return {
         modified: false,
+        assigned: {}, // true: value was assigned to these props, false: was removed
         hasCopy: false,
         parent: parent,
         base: base,
@@ -362,6 +467,7 @@ function _get(state, prop) {
 
 function _set(state, prop, value) {
     assertUnfinished(state);
+    state.assigned[prop] = true; // optimization; skip this if there is no listener
     if (!state.modified) {
         if (is(source$1(state)[prop], value)) return;
         markChanged$1(state);
@@ -415,7 +521,7 @@ function assertUnfinished(state) {
 // this sounds very expensive, but actually it is not that expensive in practice
 // as it will only visit proxies, and only do key-based change detection for objects for
 // which it is not already know that they are changed (that is, only object for which no known key was changed)
-function markChanges() {
+function markChangesSweep() {
     // intentionally we process the proxies in reverse order;
     // ideally we start by processing leafs in the tree, because if a child has changed, we don't have to check the parent anymore
     // reverse order of proxy creation approximates this
@@ -427,6 +533,57 @@ function markChanges() {
             } else if (hasObjectChanges(state)) markChanged$1(state);
         }
     }
+}
+
+function markChangesRecursively(object) {
+    if (!object || (typeof object === "undefined" ? "undefined" : _typeof(object)) !== "object") return;
+    var state = object[PROXY_STATE];
+    if (!state) return;
+    var proxy = state.proxy,
+        base = state.base;
+
+    if (Array.isArray(object)) {
+        if (hasArrayChanges(state)) {
+            markChanged$1(state);
+            state.assigned.length = true;
+            if (proxy.length < base.length) for (var i = proxy.length; i < base.length; i++) {
+                state.assigned[i] = false;
+            } else for (var _i = base.length; _i < proxy.length; _i++) {
+                state.assigned[_i] = true;
+            }each(proxy, function (index, child) {
+                if (!state.assigned[index]) markChangesRecursively(child);
+            });
+        }
+    } else {
+        var _diffKeys = diffKeys(base, proxy),
+            added = _diffKeys.added,
+            removed = _diffKeys.removed;
+
+        if (added.length > 0 || removed.length > 0) markChanged$1(state);
+        each(added, function (_, key) {
+            state.assigned[key] = true;
+        });
+        each(removed, function (_, key) {
+            state.assigned[key] = false;
+        });
+        each(proxy, function (key, child) {
+            if (!state.assigned[key]) markChangesRecursively(child);
+        });
+    }
+}
+
+function diffKeys(from, to) {
+    // TODO: optimize
+    var a = Object.keys(from);
+    var b = Object.keys(to);
+    return {
+        added: b.filter(function (key) {
+            return a.indexOf(key) === -1;
+        }),
+        removed: a.filter(function (key) {
+            return b.indexOf(key) === -1;
+        })
+    };
 }
 
 function hasObjectChanges(state) {
@@ -453,7 +610,7 @@ function hasArrayChanges(state) {
     return false;
 }
 
-function produceEs5(baseState, producer) {
+function produceEs5(baseState, producer, patchListener) {
     if (isProxy(baseState)) {
         // See #100, don't nest producers
         var returnValue = producer.call(baseState, baseState);
@@ -461,6 +618,8 @@ function produceEs5(baseState, producer) {
     }
     var prevStates = states;
     states = [];
+    var patches = patchListener && [];
+    var inversePatches = patchListener && [];
     try {
         // create proxy for root
         var rootProxy = createProxy$1(undefined, baseState);
@@ -470,20 +629,26 @@ function produceEs5(baseState, producer) {
         each(states, function (_, state) {
             state.finalizing = true;
         });
-        // find and mark all changes (for parts not done yet)
-        // TODO: store states by depth, to be able guarantee processing leaves first
-        markChanges();
         var result = void 0;
         // check whether the draft was modified and/or a value was returned
         if (_returnValue !== undefined && _returnValue !== rootProxy) {
             // something was returned, and it wasn't the proxy itself
             if (rootProxy[PROXY_STATE].modified) throw new Error(RETURNED_AND_MODIFIED_ERROR);
             result = finalize(_returnValue);
-        } else result = finalize(rootProxy);
+            if (patches) {
+                patches.push({ op: "replace", path: [], value: result });
+                inversePatches.push({ op: "replace", path: [], value: baseState });
+            }
+        } else {
+            if (patchListener) markChangesRecursively(rootProxy);
+            markChangesSweep(); // this one is more efficient if we don't need to know which attributes have changed
+            result = finalize(rootProxy, [], patches, inversePatches);
+        }
         // make sure all proxies become unusable
         each(states, function (_, state) {
             state.finished = true;
         });
+        patchListener && patchListener(patches, inversePatches);
         return result;
     } finally {
         states = prevStates;
@@ -523,11 +688,12 @@ function createHiddenProperty(target, prop, value) {
  * @export
  * @param {any} baseState - the state to start with
  * @param {Function} producer - function that receives a proxy of the base state as first argument and which can be freely modified
+ * @param {Function} patchListener - optional function that will be called with all the patches produces here
  * @returns {any} a new state, or the base state if nothing was modified
  */
-function produce(baseState, producer) {
+function produce(baseState, producer, patchListener) {
     // prettier-ignore
-    if (arguments.length !== 1 && arguments.length !== 2) throw new Error("produce expects 1 or 2 arguments, got " + arguments.length);
+    if (arguments.length < 1 || arguments.length > 3) throw new Error("produce expects 1 to 3 arguments, got " + arguments.length);
 
     // curried invocation
     if (typeof baseState === "function") {
@@ -552,6 +718,7 @@ function produce(baseState, producer) {
     // prettier-ignore
     {
         if (typeof producer !== "function") throw new Error("if first argument is not a function, the second argument to produce should be a function");
+        if (patchListener !== undefined && typeof patchListener !== "function") throw new Error("the third argument of a producer should not be set or a function");
     }
 
     // if state is a primitive, don't bother proxying at all
@@ -561,10 +728,15 @@ function produce(baseState, producer) {
     }
 
     if (!isProxyable(baseState)) throw new Error("the first argument to an immer producer should be a primitive, plain object or array, got " + (typeof baseState === "undefined" ? "undefined" : _typeof(baseState)) + ": \"" + baseState + "\"");
-    return getUseProxies() ? produceProxy(baseState, producer) : produceEs5(baseState, producer);
+    return getUseProxies() ? produceProxy(baseState, producer, patchListener) : produceEs5(baseState, producer, patchListener);
 }
 
-const initialState = {};
+var applyPatches$1 = produce(applyPatches);
+//# sourceMappingURL=immer.module.js.map
+
+const initialState = {
+  index: {}
+};
 
 function resourcesReducer(state = initialState, action) {
   const {
@@ -576,12 +748,14 @@ function resourcesReducer(state = initialState, action) {
     resourcesById,
     resourceTypes,
     resourceType,
-    resources
+    resources,
+    index,
   } = action;
   return produce(state, draft => {
     switch (type) {
       case "ADD_OR_REPLACE_RESOURCE_BY_ID":
         _initializeResource(draft, resourceType);
+        _initializeIndex(draft, resourceType);
 
         draft[resourceType][id] = {
           type: resourceType,
@@ -590,25 +764,44 @@ function resourcesReducer(state = initialState, action) {
           links,
           relationships
         };
+        const indexPosition = draft.index[resourceType].indexOf(id);
+        // Add to index if it does not yet exist
+        if (indexPosition === -1) {
+          draft.index[resourceType].push(id);
+        }
         break;
       case "UPDATE_RESOURCES":
         _initializeResource(draft, resourceType);
+        _initializeIndex(draft, resourceType);
 
+        let newIndex = index.slice(0);
         Object.entries(resourcesById).forEach(
-          ([id, resource]) => (draft[resourceType][id] = resource)
+          ([id, resource]) => {
+            draft[resourceType][id] = resource;
+            // Normalize the ids during findIndex to strings
+            const indexPosition = draft.index[resourceType].indexOf(resource.id);
+            // Remove from the new index order if it already exists (keeps original order on update)
+            if (indexPosition !== -1) {
+              newIndex = newIndex.filter(indexId => indexId !== resource.id);
+            }
+          }
         );
+        draft.index[resourceType] = draft.index[resourceType].concat(newIndex);
         break;
       case "REMOVE_RESOURCE_BY_ID":
         delete draft[resourceType][id];
+        _removeFromIndex(draft, resourceType, id);
         break;
       case "REMOVE_RESOURCES_BY_ID":
         resources.forEach(resource => {
           delete draft[resource.type][resource.id];
+          _removeFromIndex(draft, resource.type, resource.id);
         });
         break;
       case "CLEAR_RESOURCES":
         resourceTypes.forEach(resourceType => {
           draft[resourceType] = {};
+          draft.index[resourceType] = [];
         });
         break;
     }
@@ -619,6 +812,20 @@ const _initializeResource = (draft, resourceType) => {
   if (resourceType in draft) return;
   draft[resourceType] = {};
 };
+
+const _initializeIndex = (draft, resourceType) => {
+  if (resourceType in draft.index) {
+    return;
+  }
+  draft.index[resourceType] = [];
+};
+
+const _removeFromIndex = (draft, resourceType, id) => {
+  if (!draft.index[resourceType]) {
+    draft.index[resourceType] = [];
+    return;
+  }
+  draft.index[resourceType] = draft.index[resourceType].filter(indexId => indexId !== id);};
 
 var index = {actions, resourcesReducer};
 
