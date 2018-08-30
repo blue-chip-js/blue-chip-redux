@@ -732,7 +732,6 @@ function produce(baseState, producer, patchListener) {
 }
 
 var applyPatches$1 = produce(applyPatches);
-//# sourceMappingURL=immer.module.js.map
 
 const initialState = {
   index: {}

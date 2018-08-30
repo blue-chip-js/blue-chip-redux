@@ -4,56 +4,114 @@
   (global.bundle = global.bundle || {}, global.bundle.js = factory());
 }(this, (function () { 'use strict';
 
-  const buildRelationships = resource => {
-    return Object.entries(resource).reduce((newObject, [key, value]) => {
+  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+    return typeof obj;
+  } : function (obj) {
+    return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+  };
+
+  var slicedToArray = function () {
+    function sliceIterator(arr, i) {
+      var _arr = [];
+      var _n = true;
+      var _d = false;
+      var _e = undefined;
+
+      try {
+        for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+          _arr.push(_s.value);
+
+          if (i && _arr.length === i) break;
+        }
+      } catch (err) {
+        _d = true;
+        _e = err;
+      } finally {
+        try {
+          if (!_n && _i["return"]) _i["return"]();
+        } finally {
+          if (_d) throw _e;
+        }
+      }
+
+      return _arr;
+    }
+
+    return function (arr, i) {
+      if (Array.isArray(arr)) {
+        return arr;
+      } else if (Symbol.iterator in Object(arr)) {
+        return sliceIterator(arr, i);
+      } else {
+        throw new TypeError("Invalid attempt to destructure non-iterable instance");
+      }
+    };
+  }();
+
+  var buildRelationships = function buildRelationships(resource) {
+    return Object.entries(resource).reduce(function (newObject, _ref) {
+      var _ref2 = slicedToArray(_ref, 2),
+          key = _ref2[0],
+          value = _ref2[1];
+
       if (value && Array.isArray(value)) {
         if (!newObject[key]) {
-          newObject[key] = {data: []};
+          newObject[key] = { data: [] };
         }
 
-        newObject[key].data = value.map(id => ({type: key, id}));
+        newObject[key].data = value.map(function (id) {
+          return { type: key, id: id };
+        });
       }
+
+      if (value && (typeof value === "undefined" ? "undefined" : _typeof(value)) === "object") ;
       return newObject;
     }, {});
   };
 
-  const updateResources = (mutator, resourceType, resourcesById, index) => {
-    mutator({type: "UPDATE_RESOURCES", resourceType, resourcesById, index});
+  var updateResources = function updateResources(mutator, resourceType, resourcesById, index) {
+    mutator({ type: "UPDATE_RESOURCES", resourceType: resourceType, resourcesById: resourcesById, index: index });
   };
 
-  const updateResource = (
-    mutator,
-    {id, type, attributes, links, relationships}
-  ) => {
+  var updateResource = function updateResource(mutator, _ref) {
+    var id = _ref.id,
+        type = _ref.type,
+        attributes = _ref.attributes,
+        links = _ref.links,
+        relationships = _ref.relationships;
+
     mutator({
       type: "ADD_OR_REPLACE_RESOURCE_BY_ID",
       resourceType: type,
-      id,
-      attributes,
-      links,
+      id: id,
+      attributes: attributes,
+      links: links,
       relationships: relationships || buildRelationships(type, attributes)
     });
   };
 
-  const removeResources = (mutator, resources) => {
+  var removeResources = function removeResources(mutator, resources) {
     mutator({
       type: "REMOVE_RESOURCES_BY_ID",
-      resources
+      resources: resources
     });
   };
 
-  const removeResource = (mutator, {id, type}) => {
+  var removeResource = function removeResource(mutator, _ref2) {
+    var id = _ref2.id,
+        type = _ref2.type;
+
     mutator({
       type: "REMOVE_RESOURCE_BY_ID",
       resourceType: type,
-      id
+      id: id
     });
   };
 
-  const clearResources = (mutator, resourceTypes) => {
+  var clearResources = function clearResources(mutator, resourceTypes) {
     mutator({
       type: "CLEAR_RESOURCES",
-      resourceTypes
+      resourceTypes: resourceTypes
     });
   };
 
@@ -151,10 +209,10 @@
       return draft;
   }
 
-  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
-    return typeof obj;
+  var _typeof$1 = typeof Symbol === "function" && _typeof(Symbol.iterator) === "symbol" ? function (obj) {
+      return typeof obj === "undefined" ? "undefined" : _typeof(obj);
   } : function (obj) {
-    return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj === "undefined" ? "undefined" : _typeof(obj);
   };
 
   var PROXY_STATE = typeof Symbol !== "undefined" ? Symbol("immer-proxy-state") : "__$immer_state";
@@ -178,7 +236,7 @@
 
   function isProxyable(value) {
       if (!value) return false;
-      if ((typeof value === "undefined" ? "undefined" : _typeof(value)) !== "object") return false;
+      if ((typeof value === "undefined" ? "undefined" : _typeof$1(value)) !== "object") return false;
       if (Array.isArray(value)) return true;
       var proto = Object.getPrototypeOf(value);
       return proto === null || proto === Object.prototype;
@@ -266,8 +324,6 @@
       // always freeze completely new data
       freeze(parent);
   }
-
-
 
   function is(x, y) {
       // From: https://github.com/facebook/fbjs/blob/c69904a511b900266935168223063dd8772dfc40/packages/fbjs/src/core/shallowEqual.js
@@ -540,7 +596,7 @@
   }
 
   function markChangesRecursively(object) {
-      if (!object || (typeof object === "undefined" ? "undefined" : _typeof(object)) !== "object") return;
+      if (!object || (typeof object === "undefined" ? "undefined" : _typeof$1(object)) !== "object") return;
       var state = object[PROXY_STATE];
       if (!state) return;
       var proxy = state.proxy,
@@ -662,7 +718,7 @@
   function shallowEqual(objA, objB) {
       //From: https://github.com/facebook/fbjs/blob/c69904a511b900266935168223063dd8772dfc40/packages/fbjs/src/core/shallowEqual.js
       if (is(objA, objB)) return true;
-      if ((typeof objA === "undefined" ? "undefined" : _typeof(objA)) !== "object" || objA === null || (typeof objB === "undefined" ? "undefined" : _typeof(objB)) !== "object" || objB === null) {
+      if ((typeof objA === "undefined" ? "undefined" : _typeof$1(objA)) !== "object" || objA === null || (typeof objB === "undefined" ? "undefined" : _typeof$1(objB)) !== "object" || objB === null) {
           return false;
       }
       var keysA = Object.keys(objA);
@@ -726,36 +782,36 @@
       }
 
       // if state is a primitive, don't bother proxying at all
-      if ((typeof baseState === "undefined" ? "undefined" : _typeof(baseState)) !== "object" || baseState === null) {
+      if ((typeof baseState === "undefined" ? "undefined" : _typeof$1(baseState)) !== "object" || baseState === null) {
           var returnValue = producer(baseState);
           return returnValue === undefined ? baseState : returnValue;
       }
 
-      if (!isProxyable(baseState)) throw new Error("the first argument to an immer producer should be a primitive, plain object or array, got " + (typeof baseState === "undefined" ? "undefined" : _typeof(baseState)) + ": \"" + baseState + "\"");
+      if (!isProxyable(baseState)) throw new Error("the first argument to an immer producer should be a primitive, plain object or array, got " + (typeof baseState === "undefined" ? "undefined" : _typeof$1(baseState)) + ": \"" + baseState + "\"");
       return getUseProxies() ? produceProxy(baseState, producer, patchListener) : produceEs5(baseState, producer, patchListener);
   }
 
   var applyPatches$1 = produce(applyPatches);
-  //# sourceMappingURL=immer.module.js.map
 
-  const initialState = {
+  var initialState = {
     index: {}
   };
 
-  function resourcesReducer(state = initialState, action) {
-    const {
-      type,
-      id,
-      attributes,
-      links,
-      relationships,
-      resourcesById,
-      resourceTypes,
-      resourceType,
-      resources,
-      index,
-    } = action;
-    return produce(state, draft => {
+  function resourcesReducer() {
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
+    var action = arguments[1];
+    var type = action.type,
+        id = action.id,
+        attributes = action.attributes,
+        links = action.links,
+        relationships = action.relationships,
+        resourcesById = action.resourcesById,
+        resourceTypes = action.resourceTypes,
+        resourceType = action.resourceType,
+        resources = action.resources,
+        index = action.index;
+
+    return produce(state, function (draft) {
       switch (type) {
         case "ADD_OR_REPLACE_RESOURCE_BY_ID":
           _initializeResource(draft, resourceType);
@@ -763,12 +819,12 @@
 
           draft[resourceType][id] = {
             type: resourceType,
-            id,
-            attributes,
-            links,
-            relationships
+            id: id,
+            attributes: attributes,
+            links: links,
+            relationships: relationships
           };
-          const indexPosition = draft.index[resourceType].indexOf(id);
+          var indexPosition = draft.index[resourceType].indexOf(id);
           // Add to index if it does not yet exist
           if (indexPosition === -1) {
             draft.index[resourceType].push(id);
@@ -778,18 +834,22 @@
           _initializeResource(draft, resourceType);
           _initializeIndex(draft, resourceType);
 
-          let newIndex = index.slice(0);
-          Object.entries(resourcesById).forEach(
-            ([id, resource]) => {
-              draft[resourceType][id] = resource;
-              // Normalize the ids during findIndex to strings
-              const indexPosition = draft.index[resourceType].indexOf(resource.id);
-              // Remove from the new index order if it already exists (keeps original order on update)
-              if (indexPosition !== -1) {
-                newIndex = newIndex.filter(indexId => indexId !== resource.id);
-              }
+          var newIndex = index.slice(0);
+          Object.entries(resourcesById).forEach(function (_ref) {
+            var _ref2 = slicedToArray(_ref, 2),
+                id = _ref2[0],
+                resource = _ref2[1];
+
+            draft[resourceType][id] = resource;
+            // Normalize the ids during findIndex to strings
+            var indexPosition = draft.index[resourceType].indexOf(resource.id);
+            // Remove from the new index order if it already exists (keeps original order on update)
+            if (indexPosition !== -1) {
+              newIndex = newIndex.filter(function (indexId) {
+                return indexId !== resource.id;
+              });
             }
-          );
+          });
           draft.index[resourceType] = draft.index[resourceType].concat(newIndex);
           break;
         case "REMOVE_RESOURCE_BY_ID":
@@ -797,13 +857,13 @@
           _removeFromIndex(draft, resourceType, id);
           break;
         case "REMOVE_RESOURCES_BY_ID":
-          resources.forEach(resource => {
+          resources.forEach(function (resource) {
             delete draft[resource.type][resource.id];
             _removeFromIndex(draft, resource.type, resource.id);
           });
           break;
         case "CLEAR_RESOURCES":
-          resourceTypes.forEach(resourceType => {
+          resourceTypes.forEach(function (resourceType) {
             draft[resourceType] = {};
             draft.index[resourceType] = [];
           });
@@ -812,26 +872,28 @@
     });
   }
 
-  const _initializeResource = (draft, resourceType) => {
+  var _initializeResource = function _initializeResource(draft, resourceType) {
     if (resourceType in draft) return;
     draft[resourceType] = {};
   };
 
-  const _initializeIndex = (draft, resourceType) => {
+  var _initializeIndex = function _initializeIndex(draft, resourceType) {
     if (resourceType in draft.index) {
       return;
     }
     draft.index[resourceType] = [];
   };
 
-  const _removeFromIndex = (draft, resourceType, id) => {
+  var _removeFromIndex = function _removeFromIndex(draft, resourceType, id) {
     if (!draft.index[resourceType]) {
       draft.index[resourceType] = [];
       return;
     }
-    draft.index[resourceType] = draft.index[resourceType].filter(indexId => indexId !== id);};
+    draft.index[resourceType] = draft.index[resourceType].filter(function (indexId) {
+      return indexId !== id;
+    });};
 
-  var index = {actions, resourcesReducer};
+  var index = { actions: actions, resourcesReducer: resourcesReducer };
 
   return index;
 
