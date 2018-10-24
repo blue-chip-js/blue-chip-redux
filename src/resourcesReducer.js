@@ -15,7 +15,7 @@ export default function resourcesReducer(state = initialState, action) {
     resourceTypes,
     resourceType,
     resources,
-    index,
+    index
   } = action;
   return produce(state, draft => {
     switch (type) {
@@ -41,17 +41,15 @@ export default function resourcesReducer(state = initialState, action) {
         _initializeIndex(draft, resourceType);
 
         let newIndex = index.slice(0);
-        Object.entries(resourcesById).forEach(
-          ([id, resource]) => {
-            draft[resourceType][id] = resource;
-            // Normalize the ids during findIndex to strings
-            const indexPosition = draft.index[resourceType].indexOf(resource.id);
-            // Remove from the new index order if it already exists (keeps original order on update)
-            if (indexPosition !== -1) {
-              newIndex = newIndex.filter(indexId => indexId !== resource.id);
-            }
+        Object.entries(resourcesById).forEach(([id, resource]) => {
+          draft[resourceType][id] = resource;
+          // Normalize the ids during findIndex to strings
+          const indexPosition = draft.index[resourceType].indexOf(resource.id);
+          // Remove from the new index order if it already exists (keeps original order on update)
+          if (indexPosition !== -1) {
+            newIndex = newIndex.filter(indexId => indexId !== resource.id);
           }
-        );
+        });
         draft.index[resourceType] = draft.index[resourceType].concat(newIndex);
         break;
       case "REMOVE_RESOURCE_BY_ID":
@@ -91,5 +89,7 @@ const _removeFromIndex = (draft, resourceType, id) => {
     draft.index[resourceType] = [];
     return;
   }
-  draft.index[resourceType] = draft.index[resourceType].filter(indexId => indexId !== id);;
-}
+  draft.index[resourceType] = draft.index[resourceType].filter(
+    indexId => indexId !== id
+  );
+};
