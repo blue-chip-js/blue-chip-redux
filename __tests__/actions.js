@@ -24,12 +24,14 @@ describe("Redux Actions", () => {
     describe("JsonApi", () => {
       test("dispatches UPDATE_RESOURCES for each ", () => {
         const tasksMergeResourcesAction = {
+          index: [1, 2, 3],
           resourceType: "tasks",
           resourcesById: normalizedJsonApiTasksPayload,
           type: "UPDATE_RESOURCES"
         };
 
         const checklistsMergeResourcesAction = {
+          index: [1, 2, 3],
           resourceType: "checklists",
           resourcesById: normalizedJsonApiChecklistsPayload,
           type: "UPDATE_RESOURCES"
@@ -44,12 +46,14 @@ describe("Redux Actions", () => {
     describe("GraphQl", () => {
       test("dispatches UPDATE_RESOURCES for each ", () => {
         const tasksMergeResourcesAction = {
+          index: [],
           resourceType: "tasks",
           resourcesById: normalizedGraphQlTaskPayload,
           type: "UPDATE_RESOURCES"
         };
 
         const checklistsMergeResourcesAction = {
+          index: [],
           resourceType: "checklists",
           resourcesById: normalizedGraphQlChecklistPayload,
           type: "UPDATE_RESOURCES"
