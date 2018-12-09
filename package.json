@@ -1,6 +1,6 @@
 {
   "name": "@blue-chip/redux-adapter",
-  "version": "0.2.3",
+  "version": "0.2.7",
   "description": "Redux adapter for BlueChip",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",
@@ -28,6 +28,7 @@
     "babel-preset-env": "^1.7.0",
     "babel-preset-stage-0": "^6.24.1",
     "coveralls": "^3.0.2",
+    "merge": ">=1.2.1",
     "rollup": "^0.62.0",
     "rollup-plugin-babel": "^3.0.7",
     "rollup-plugin-commonjs": "^9.1.3",
