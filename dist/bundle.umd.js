@@ -767,7 +767,7 @@
           };
 
           // Partially update or insert resource
-          updateResource$1(draft, resourceType, id, resource);
+          _updateResource(draft, resourceType, id, resource);
 
           var indexPosition = draft.index[resourceType].indexOf(id);
           // Add to index if it does not yet exist
@@ -785,7 +785,7 @@
                 resource = _ref2[1];
 
             // Partially update or insert resource
-            updateResource$1(draft, resourceType, id, resource);
+            _updateResource(draft, resourceType, id, resource);
 
             // Normalize the ids during findIndex to strings
             var indexPosition = draft.index[resourceType].indexOf(resource.id);
@@ -822,31 +822,26 @@
     });
   }
 
-  var updateResource$1 = function updateResource(draft, resourceType, id, resource) {
-    // handle existing by only updating what changed
+  var _updateResource = function _updateResource(draft, resourceType, id, newResource) {
     if (draft[resourceType][id]) {
-      // handle existing by only updating what changed
-      var oldResource = draft[resourceType][id];
-      if (oldResource.attributes && resource.attributes) {
-        draft[resourceType][id].attributes = _extends({}, oldResource.attributes, resource.attributes);
-      } else if (resource.attributes) {
-        draft[resourceType][id].attributes = resource.attributes;
-      }
+      var draftResource = draft[resourceType][id];
 
-      if (oldResource.relationships && resource.relationships) {
-        draft[resourceType][id].relationships = _extends({}, oldResource.relationships, resource.relationships);
-      } else if (resource.relationships) {
-        draft[resourceType][id].relationships = resource.relationships;
-      }
-
-      if (oldResource.links && resource.links) {
-        draft[resourceType][id].links = _extends({}, oldResource.links, resource.links);
-      } else if (resource.links) {
-        draft[resourceType][id].links = resource.links;
-      }
+      _updateProperty("attributes", draftResource, newResource);
+      _updateProperty("relationships", draftResource, newResource);
+      _updateProperty("links", draftResource, newResource);
     } else {
       // New resource
-      draft[resourceType][id] = resource;
+      draft[resourceType][id] = newResource;
+    }
+  };
+
+  var _updateProperty = function _updateProperty(property, draftResource, newResource) {
+    if (draftResource[property] && newResource[property]) {
+      // handle existing by only updating what changed
+      draftResource[property] = _extends({}, draftResource[property], newResource[property]);
+    } else if (newResource[property]) {
+      // Property didn't exist prior so add it
+      draftResource[property] = newResource[property];
     }
   };
 

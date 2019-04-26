@@ -757,7 +757,7 @@ function resourcesReducer(state = initialState, action) {
         };
 
         // Partially update or insert resource
-        updateResource$1(draft, resourceType, id, resource);  
+        _updateResource(draft, resourceType, id, resource);  
 
         const indexPosition = draft.index[resourceType].indexOf(id);
         // Add to index if it does not yet exist
@@ -771,7 +771,7 @@ function resourcesReducer(state = initialState, action) {
         let newIndex = index.slice(0);
         Object.entries(resourcesById).forEach(([id, resource]) => {
           // Partially update or insert resource
-          updateResource$1(draft, resourceType, id, resource);
+          _updateResource(draft, resourceType, id, resource);
           
           // Normalize the ids during findIndex to strings
           const indexPosition = draft.index[resourceType].indexOf(resource.id);
@@ -806,40 +806,29 @@ function resourcesReducer(state = initialState, action) {
   });
 }
 
-const updateResource$1 = (draft, resourceType, id, resource) => {
-  // handle existing by only updating what changed
+const _updateResource = (draft, resourceType, id, newResource) => {
   if (draft[resourceType][id]) {
-    // handle existing by only updating what changed
-    const oldResource = draft[resourceType][id];
-    if (oldResource.attributes && resource.attributes) {
-      draft[resourceType][id].attributes = {
-        ...oldResource.attributes,
-        ...resource.attributes
-      };
-    } else if (resource.attributes) {
-      draft[resourceType][id].attributes = resource.attributes;
-    }
-
-    if (oldResource.relationships && resource.relationships) {
-      draft[resourceType][id].relationships = {
-        ...oldResource.relationships,
-        ...resource.relationships
-      };
-    } else if (resource.relationships) {
-      draft[resourceType][id].relationships = resource.relationships;
-    }
-
-    if (oldResource.links && resource.links) {
-      draft[resourceType][id].links = {
-        ...oldResource.links,
-        ...resource.links
-      };
-    } else if (resource.links) {
-      draft[resourceType][id].links = resource.links;
-    }
+    const draftResource = draft[resourceType][id];
+    
+    _updateProperty("attributes", draftResource, newResource);
+    _updateProperty("relationships", draftResource, newResource);
+    _updateProperty("links", draftResource, newResource);
   } else {
     // New resource
-    draft[resourceType][id] = resource;
+    draft[resourceType][id] = newResource;
+  }
+};
+
+const _updateProperty = (property, draftResource, newResource) => {
+  if (draftResource[property] && newResource[property]) {
+    // handle existing by only updating what changed
+    draftResource[property] = {
+      ...draftResource[property],
+      ...newResource[property]
+    };
+  } else if (newResource[property]) {
+    // Property didn't exist prior so add it
+    draftResource[property] = newResource[property];
   }
 };
 
