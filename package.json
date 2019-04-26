@@ -1,6 +1,6 @@
 {
   "name": "@blue-chip/redux-adapter",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "Redux adapter for BlueChip",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",
