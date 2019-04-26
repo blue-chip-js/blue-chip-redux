@@ -1,0 +1,557 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Partial Update tests: partial update attributes: should add new attributes when given, update others given 1`] = `
+Object {
+  "index": Object {
+    "projects": Array [
+      "1",
+    ],
+  },
+  "projects": Object {
+    "1": Object {
+      "attributes": Object {
+        "clientId": 2,
+        "createdAt": "2015-06-14T22:12:05.275Z",
+        "currencyId": 1,
+        "endDate": "2015-06-14T22:12:05.275Z",
+        "entityId": 1,
+        "freightVendorId": 2,
+        "fundingDue": "Annually",
+        "fundingType": "Cashflow",
+        "isStarred": null,
+        "name": "Project 1",
+        "newAttribute": "someValue",
+        "nickname": "nickname-1",
+        "officeId": 1,
+        "propertyId": 1,
+        "scopeConsulting": false,
+        "scopeFfe": false,
+        "scopeModelRoom": false,
+        "scopeOse": false,
+        "startDate": "2015-06-14T22:12:05.275Z",
+        "status": "Proposed",
+        "teamId": 1,
+        "type": "Full Renovation",
+        "updatedAt": "2015-06-14T22:12:05.275Z",
+      },
+      "id": "1",
+      "relationships": Object {
+        "freightVendor": Object {
+          "data": Object {
+            "id": "2",
+            "type": "vendors",
+          },
+        },
+        "specs": Object {
+          "data": Array [
+            Object {
+              "id": "1",
+              "type": "specs",
+            },
+            Object {
+              "id": "2",
+              "type": "specs",
+            },
+          ],
+        },
+      },
+      "type": "projects",
+    },
+  },
+}
+`;
+
+exports[`Partial Update tests: partial update attributes: should update only the attributes given 1`] = `
+Object {
+  "index": Object {
+    "projects": Array [
+      "1",
+    ],
+  },
+  "projects": Object {
+    "1": Object {
+      "attributes": Object {
+        "clientId": 2,
+        "createdAt": "2015-06-14T22:12:05.275Z",
+        "currencyId": 1,
+        "endDate": "2015-06-14T22:12:05.275Z",
+        "entityId": 1,
+        "freightVendorId": 2,
+        "fundingDue": "Yearly",
+        "fundingType": "Cashflow",
+        "isStarred": null,
+        "name": "Project 1",
+        "nickname": "nickname-1",
+        "officeId": 1,
+        "propertyId": 1,
+        "scopeConsulting": false,
+        "scopeFfe": false,
+        "scopeModelRoom": false,
+        "scopeOse": false,
+        "startDate": "2015-06-14T22:12:05.275Z",
+        "status": "Proposed",
+        "teamId": 1,
+        "type": "Full Renovation",
+        "updatedAt": "2015-06-14T22:12:05.275Z",
+      },
+      "id": "1",
+      "relationships": Object {
+        "freightVendor": Object {
+          "data": Object {
+            "id": "2",
+            "type": "vendors",
+          },
+        },
+        "specs": Object {
+          "data": Array [
+            Object {
+              "id": "1",
+              "type": "specs",
+            },
+            Object {
+              "id": "2",
+              "type": "specs",
+            },
+          ],
+        },
+      },
+      "type": "projects",
+    },
+  },
+}
+`;
+
+exports[`Partial Update tests: partial update attributes: should update the store given a UPDATE_RESOURCES action 1`] = `
+Object {
+  "index": Object {
+    "projects": Array [
+      "1",
+    ],
+  },
+  "projects": Object {
+    "1": Object {
+      "attributes": Object {
+        "clientId": 2,
+        "createdAt": "2015-06-14T22:12:05.275Z",
+        "currencyId": 1,
+        "endDate": "2015-06-14T22:12:05.275Z",
+        "entityId": 1,
+        "freightVendorId": 2,
+        "fundingDue": "Monthly",
+        "fundingType": "Cashflow",
+        "isStarred": null,
+        "name": "Project 1",
+        "nickname": "nickname-1",
+        "officeId": 1,
+        "propertyId": 1,
+        "scopeConsulting": false,
+        "scopeFfe": false,
+        "scopeModelRoom": false,
+        "scopeOse": false,
+        "startDate": "2015-06-14T22:12:05.275Z",
+        "status": "Proposed",
+        "teamId": 1,
+        "type": "Full Renovation",
+        "updatedAt": "2015-06-14T22:12:05.275Z",
+      },
+      "id": "1",
+      "relationships": Object {
+        "freightVendor": Object {
+          "data": Object {
+            "id": "2",
+            "type": "vendors",
+          },
+        },
+        "specs": Object {
+          "data": Array [
+            Object {
+              "id": "1",
+              "type": "specs",
+            },
+            Object {
+              "id": "2",
+              "type": "specs",
+            },
+          ],
+        },
+      },
+      "type": "projects",
+    },
+  },
+}
+`;
+
+exports[`Partial Update tests: partial update relationships: adds relationships in when previously not existing 1`] = `
+Object {
+  "index": Object {
+    "testObjects": Array [
+      "1",
+    ],
+  },
+  "testObjects": Object {
+    "1": Object {
+      "attributes": Object {
+        "testField1": "testValue",
+      },
+      "id": "1",
+      "relationships": Object {
+        "newThing": Object {
+          "data": Object {
+            "id": "1",
+            "type": "newThings",
+          },
+        },
+      },
+      "type": "testObjects",
+    },
+  },
+}
+`;
+
+exports[`Partial Update tests: partial update relationships: should add new relationship/update others sent 1`] = `
+Object {
+  "index": Object {
+    "projects": Array [
+      "1",
+    ],
+  },
+  "projects": Object {
+    "1": Object {
+      "attributes": Object {
+        "clientId": 2,
+        "createdAt": "2015-06-14T22:12:05.275Z",
+        "currencyId": 1,
+        "endDate": "2015-06-14T22:12:05.275Z",
+        "entityId": 1,
+        "freightVendorId": 2,
+        "fundingDue": "Monthly",
+        "fundingType": "Cashflow",
+        "isStarred": null,
+        "name": "Project 1",
+        "nickname": "nickname-1",
+        "officeId": 1,
+        "propertyId": 1,
+        "scopeConsulting": false,
+        "scopeFfe": false,
+        "scopeModelRoom": false,
+        "scopeOse": false,
+        "startDate": "2015-06-14T22:12:05.275Z",
+        "status": "Proposed",
+        "teamId": 1,
+        "type": "Full Renovation",
+        "updatedAt": "2015-06-14T22:12:05.275Z",
+      },
+      "id": "1",
+      "relationships": Object {
+        "freightVendor": Object {
+          "data": Object {
+            "id": "1",
+            "type": "vendors",
+          },
+        },
+        "newThing": Object {
+          "data": Object {
+            "id": "1",
+            "type": "newThing",
+          },
+        },
+        "specs": Object {
+          "data": Array [
+            Object {
+              "id": "2",
+              "type": "specs",
+            },
+          ],
+        },
+      },
+      "type": "projects",
+    },
+  },
+}
+`;
+
+exports[`Partial Update tests: partial update relationships: should allow null and empty when given 1`] = `
+Object {
+  "index": Object {
+    "projects": Array [
+      "1",
+    ],
+  },
+  "projects": Object {
+    "1": Object {
+      "attributes": Object {
+        "clientId": 2,
+        "createdAt": "2015-06-14T22:12:05.275Z",
+        "currencyId": 1,
+        "endDate": "2015-06-14T22:12:05.275Z",
+        "entityId": 1,
+        "freightVendorId": 2,
+        "fundingDue": "Monthly",
+        "fundingType": "Cashflow",
+        "isStarred": null,
+        "name": "Project 1",
+        "nickname": "nickname-1",
+        "officeId": 1,
+        "propertyId": 1,
+        "scopeConsulting": false,
+        "scopeFfe": false,
+        "scopeModelRoom": false,
+        "scopeOse": false,
+        "startDate": "2015-06-14T22:12:05.275Z",
+        "status": "Proposed",
+        "teamId": 1,
+        "type": "Full Renovation",
+        "updatedAt": "2015-06-14T22:12:05.275Z",
+      },
+      "id": "1",
+      "relationships": Object {
+        "freightVendor": Object {
+          "data": Object {
+            "id": "1",
+            "type": "vendors",
+          },
+        },
+        "newThing": Object {
+          "data": null,
+        },
+        "specs": Object {
+          "data": Array [],
+        },
+      },
+      "type": "projects",
+    },
+  },
+}
+`;
+
+exports[`Partial Update tests: partial update relationships: should only update the relationships given, belongsTo scenario 1`] = `
+Object {
+  "index": Object {
+    "projects": Array [
+      "1",
+    ],
+  },
+  "projects": Object {
+    "1": Object {
+      "attributes": Object {
+        "clientId": 2,
+        "createdAt": "2015-06-14T22:12:05.275Z",
+        "currencyId": 1,
+        "endDate": "2015-06-14T22:12:05.275Z",
+        "entityId": 1,
+        "freightVendorId": 2,
+        "fundingDue": "Monthly",
+        "fundingType": "Cashflow",
+        "isStarred": null,
+        "name": "Project 1",
+        "nickname": "nickname-1",
+        "officeId": 1,
+        "propertyId": 1,
+        "scopeConsulting": false,
+        "scopeFfe": false,
+        "scopeModelRoom": false,
+        "scopeOse": false,
+        "startDate": "2015-06-14T22:12:05.275Z",
+        "status": "Proposed",
+        "teamId": 1,
+        "type": "Full Renovation",
+        "updatedAt": "2015-06-14T22:12:05.275Z",
+      },
+      "id": "1",
+      "relationships": Object {
+        "freightVendor": Object {
+          "data": Object {
+            "id": "1",
+            "type": "vendors",
+          },
+        },
+        "specs": Object {
+          "data": Array [
+            Object {
+              "id": "1",
+              "type": "specs",
+            },
+            Object {
+              "id": "2",
+              "type": "specs",
+            },
+          ],
+        },
+      },
+      "type": "projects",
+    },
+  },
+}
+`;
+
+exports[`Partial Update tests: partial update relationships: should only update the relationships given, hasMany scenario 1`] = `
+Object {
+  "index": Object {
+    "projects": Array [
+      "1",
+    ],
+  },
+  "projects": Object {
+    "1": Object {
+      "attributes": Object {
+        "clientId": 2,
+        "createdAt": "2015-06-14T22:12:05.275Z",
+        "currencyId": 1,
+        "endDate": "2015-06-14T22:12:05.275Z",
+        "entityId": 1,
+        "freightVendorId": 2,
+        "fundingDue": "Monthly",
+        "fundingType": "Cashflow",
+        "isStarred": null,
+        "name": "Project 1",
+        "nickname": "nickname-1",
+        "officeId": 1,
+        "propertyId": 1,
+        "scopeConsulting": false,
+        "scopeFfe": false,
+        "scopeModelRoom": false,
+        "scopeOse": false,
+        "startDate": "2015-06-14T22:12:05.275Z",
+        "status": "Proposed",
+        "teamId": 1,
+        "type": "Full Renovation",
+        "updatedAt": "2015-06-14T22:12:05.275Z",
+      },
+      "id": "1",
+      "relationships": Object {
+        "freightVendor": Object {
+          "data": Object {
+            "id": "1",
+            "type": "vendors",
+          },
+        },
+        "specs": Object {
+          "data": Array [
+            Object {
+              "id": "1",
+              "type": "specs",
+            },
+          ],
+        },
+      },
+      "type": "projects",
+    },
+  },
+}
+`;
+
+exports[`Partial Update tests: partial update relationships: should only update the relationships given, no relationships sent scenario 1`] = `
+Object {
+  "index": Object {
+    "projects": Array [
+      "1",
+    ],
+  },
+  "projects": Object {
+    "1": Object {
+      "attributes": Object {
+        "clientId": 2,
+        "createdAt": "2015-06-14T22:12:05.275Z",
+        "currencyId": 1,
+        "endDate": "2015-06-14T22:12:05.275Z",
+        "entityId": 1,
+        "freightVendorId": 2,
+        "fundingDue": "Monthly",
+        "fundingType": "Cashflow",
+        "isStarred": null,
+        "name": "Project 1",
+        "nickname": "nickname-1",
+        "officeId": 1,
+        "propertyId": 1,
+        "scopeConsulting": false,
+        "scopeFfe": false,
+        "scopeModelRoom": false,
+        "scopeOse": false,
+        "startDate": "2015-06-14T22:12:05.275Z",
+        "status": "Proposed",
+        "teamId": 1,
+        "type": "Full Renovation",
+        "updatedAt": "2015-06-14T22:12:05.275Z",
+      },
+      "id": "1",
+      "relationships": Object {
+        "freightVendor": Object {
+          "data": Object {
+            "id": "1",
+            "type": "vendors",
+          },
+        },
+        "specs": Object {
+          "data": Array [
+            Object {
+              "id": "1",
+              "type": "specs",
+            },
+          ],
+        },
+      },
+      "type": "projects",
+    },
+  },
+}
+`;
+
+exports[`Partial Update tests: partial update relationships: should update the store given a UPDATE_RESOURCES action 1`] = `
+Object {
+  "index": Object {
+    "projects": Array [
+      "1",
+    ],
+  },
+  "projects": Object {
+    "1": Object {
+      "attributes": Object {
+        "clientId": 2,
+        "createdAt": "2015-06-14T22:12:05.275Z",
+        "currencyId": 1,
+        "endDate": "2015-06-14T22:12:05.275Z",
+        "entityId": 1,
+        "freightVendorId": 2,
+        "fundingDue": "Monthly",
+        "fundingType": "Cashflow",
+        "isStarred": null,
+        "name": "Project 1",
+        "nickname": "nickname-1",
+        "officeId": 1,
+        "propertyId": 1,
+        "scopeConsulting": false,
+        "scopeFfe": false,
+        "scopeModelRoom": false,
+        "scopeOse": false,
+        "startDate": "2015-06-14T22:12:05.275Z",
+        "status": "Proposed",
+        "teamId": 1,
+        "type": "Full Renovation",
+        "updatedAt": "2015-06-14T22:12:05.275Z",
+      },
+      "id": "1",
+      "relationships": Object {
+        "freightVendor": Object {
+          "data": Object {
+            "id": "2",
+            "type": "vendors",
+          },
+        },
+        "specs": Object {
+          "data": Array [
+            Object {
+              "id": "1",
+              "type": "specs",
+            },
+            Object {
+              "id": "2",
+              "type": "specs",
+            },
+          ],
+        },
+      },
+      "type": "projects",
+    },
+  },
+}
+`;

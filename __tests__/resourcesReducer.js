@@ -79,8 +79,8 @@ describe("post reducer", () => {
     });
   });
 
-  describe("ADD_OR_REPLACE_RESOURCE_BY_ID", () => {
-    it("should update the store given a ADD_OR_REPLACE_RESOURCE_BY_ID action", () => {
+  describe("UPDATE_RESOURCE_BY_ID", () => {
+    it("should update the store given a UPDATE_RESOURCE_BY_ID action", () => {
       const checklist = {
         id: 1,
         type: "checklists",
@@ -92,7 +92,7 @@ describe("post reducer", () => {
       };
 
       const updateAction = {
-        type: "ADD_OR_REPLACE_RESOURCE_BY_ID",
+        type: "UPDATE_RESOURCE_BY_ID",
         resourceType: checklist.type,
         id: checklist.id,
         attributes: checklist.attributes,
@@ -114,7 +114,7 @@ describe("post reducer", () => {
       });
     });
 
-    it("update to existing should not impact order ADD_OR_REPLACE_RESOURCE_BY_ID action", () => {
+    it("update to existing should not impact order UPDATE_RESOURCE_BY_ID action", () => {
       const checklist = {
         id: 1,
         type: "checklists",
@@ -126,7 +126,7 @@ describe("post reducer", () => {
       };
 
       const updateAction = {
-        type: "ADD_OR_REPLACE_RESOURCE_BY_ID",
+        type: "UPDATE_RESOURCE_BY_ID",
         resourceType: checklist.type,
         id: checklist.id,
         attributes: checklist.attributes,
@@ -264,6 +264,26 @@ describe("post reducer", () => {
         index: {
           checklists: [],
           tasks: [],
+        },
+      });
+    });
+
+    it("should clear all resources from the store", () => {
+      const initialState = {
+        checklists: normalizedJsonApiChecklistsPayload,
+        tasks: normalizedJsonApiTasksPayload,
+        index: {
+          checklists: [1,2,3],
+          tasks: [1,2,3,4,5,6],
+        }
+      };
+
+      const removeAction = {
+        type: "CLEAR_RESOURCES"
+      };
+      const state = resourcesReducer(initialState, removeAction);
+      expect(state).toEqual({
+        index: {
         },
       });
     });

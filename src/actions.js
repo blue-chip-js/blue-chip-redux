@@ -14,12 +14,12 @@ export const updateResource = (
   {id, type, attributes, links, relationships}
 ) => {
   mutator({
-    type: "ADD_OR_REPLACE_RESOURCE_BY_ID",
+    type: "UPDATE_RESOURCE_BY_ID",
     resourceType: type,
     id,
     attributes,
     links,
-    relationships: relationships || buildRelationships(type, attributes)
+    relationships,
   });
 };
 

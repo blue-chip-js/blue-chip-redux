@@ -19,17 +19,21 @@ export default function resourcesReducer(state = initialState, action) {
   } = action;
   return produce(state, draft => {
     switch (type) {
-      case "ADD_OR_REPLACE_RESOURCE_BY_ID":
+      case "UPDATE_RESOURCE_BY_ID":
         _initializeResource(draft, resourceType);
         _initializeIndex(draft, resourceType);
 
-        draft[resourceType][id] = {
+        const resource = {
           type: resourceType,
           id,
           attributes,
           links,
           relationships
         };
+
+        // Partially update or insert resource
+        updateResource(draft, resourceType, id, resource);  
+
         const indexPosition = draft.index[resourceType].indexOf(id);
         // Add to index if it does not yet exist
         if (indexPosition === -1) {
@@ -39,10 +43,11 @@ export default function resourcesReducer(state = initialState, action) {
       case "UPDATE_RESOURCES":
         _initializeResource(draft, resourceType);
         _initializeIndex(draft, resourceType);
-
         let newIndex = index.slice(0);
         Object.entries(resourcesById).forEach(([id, resource]) => {
-          draft[resourceType][id] = resource;
+          // Partially update or insert resource
+          updateResource(draft, resourceType, id, resource);
+          
           // Normalize the ids during findIndex to strings
           const indexPosition = draft.index[resourceType].indexOf(resource.id);
           // Remove from the new index order if it already exists (keeps original order on update)
@@ -63,6 +68,10 @@ export default function resourcesReducer(state = initialState, action) {
         });
         break;
       case "CLEAR_RESOURCES":
+        if (!resourceTypes) {
+          // Clear everything
+          return initialState;
+        }
         resourceTypes.forEach(resourceType => {
           draft[resourceType] = {};
           draft.index[resourceType] = [];
@@ -71,6 +80,43 @@ export default function resourcesReducer(state = initialState, action) {
     }
   });
 }
+
+const updateResource = (draft, resourceType, id, resource) => {
+  // handle existing by only updating what changed
+  if (draft[resourceType][id]) {
+    // handle existing by only updating what changed
+    const oldResource = draft[resourceType][id];
+    if (oldResource.attributes && resource.attributes) {
+      draft[resourceType][id].attributes = {
+        ...oldResource.attributes,
+        ...resource.attributes
+      };
+    } else if (resource.attributes) {
+      draft[resourceType][id].attributes = resource.attributes;
+    }
+
+    if (oldResource.relationships && resource.relationships) {
+      draft[resourceType][id].relationships = {
+        ...oldResource.relationships,
+        ...resource.relationships
+      };
+    } else if (resource.relationships) {
+      draft[resourceType][id].relationships = resource.relationships;
+    }
+
+    if (oldResource.links && resource.links) {
+      draft[resourceType][id].links = {
+        ...oldResource.links,
+        ...resource.links
+      };
+    } else if (resource.links) {
+      draft[resourceType][id].links = resource.links;
+    }
+  } else {
+    // New resource
+    draft[resourceType][id] = resource;
+  }
+};
 
 const _initializeResource = (draft, resourceType) => {
   if (resourceType in draft) return;
