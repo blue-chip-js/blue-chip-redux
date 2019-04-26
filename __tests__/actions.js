@@ -81,7 +81,7 @@ describe("Redux Actions", () => {
       };
 
       const updateAction = {
-        type: "ADD_OR_REPLACE_RESOURCE_BY_ID",
+        type: "UPDATE_RESOURCE_BY_ID",
         resourceType: checklist.type,
         id: checklist.id,
         attributes: checklist.attributes,

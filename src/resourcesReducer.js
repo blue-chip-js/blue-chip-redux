@@ -19,17 +19,21 @@ export default function resourcesReducer(state = initialState, action) {
   } = action;
   return produce(state, draft => {
     switch (type) {
-      case "ADD_OR_REPLACE_RESOURCE_BY_ID":
+      case "UPDATE_RESOURCE_BY_ID":
         _initializeResource(draft, resourceType);
         _initializeIndex(draft, resourceType);
 
-        draft[resourceType][id] = {
+        const resource = {
           type: resourceType,
           id,
           attributes,
           links,
           relationships
         };
+
+        // Partially update or insert resource
+        _updateResource(draft, resourceType, id, resource);  
+
         const indexPosition = draft.index[resourceType].indexOf(id);
         // Add to index if it does not yet exist
         if (indexPosition === -1) {
@@ -39,10 +43,11 @@ export default function resourcesReducer(state = initialState, action) {
       case "UPDATE_RESOURCES":
         _initializeResource(draft, resourceType);
         _initializeIndex(draft, resourceType);
-
         let newIndex = index.slice(0);
         Object.entries(resourcesById).forEach(([id, resource]) => {
-          draft[resourceType][id] = resource;
+          // Partially update or insert resource
+          _updateResource(draft, resourceType, id, resource);
+          
           // Normalize the ids during findIndex to strings
           const indexPosition = draft.index[resourceType].indexOf(resource.id);
           // Remove from the new index order if it already exists (keeps original order on update)
@@ -63,6 +68,10 @@ export default function resourcesReducer(state = initialState, action) {
         });
         break;
       case "CLEAR_RESOURCES":
+        if (!resourceTypes) {
+          // Clear everything
+          return initialState;
+        }
         resourceTypes.forEach(resourceType => {
           draft[resourceType] = {};
           draft.index[resourceType] = [];
@@ -70,6 +79,32 @@ export default function resourcesReducer(state = initialState, action) {
         break;
     }
   });
+}
+
+const _updateResource = (draft, resourceType, id, newResource) => {
+  if (draft[resourceType][id]) {
+    const draftResource = draft[resourceType][id];
+    
+    _updateProperty("attributes", draftResource, newResource);
+    _updateProperty("relationships", draftResource, newResource);
+    _updateProperty("links", draftResource, newResource);
+  } else {
+    // New resource
+    draft[resourceType][id] = newResource;
+  }
+};
+
+const _updateProperty = (property, draftResource, newResource) => {
+  if (draftResource[property] && newResource[property]) {
+    // handle existing by only updating what changed
+    draftResource[property] = {
+      ...draftResource[property],
+      ...newResource[property]
+    };
+  } else if (newResource[property]) {
+    // Property didn't exist prior so add it
+    draftResource[property] = newResource[property];
+  }
 }
 
 const _initializeResource = (draft, resourceType) => {
