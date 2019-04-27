@@ -4,7 +4,6 @@ const updateResources = (
   mutator,
   resourcesByType, index
 ) => {
-  console.log("*********" + resourcesByType);
   mutator({type: "UPDATE_RESOURCES", resourcesByType, index});
 };
 
@@ -765,8 +764,6 @@ function resourcesReducer(state = initialState, action) {
         }
         break;
       case "UPDATE_RESOURCES":
-
-        console.log("GOT HEREREEERERE");
         Object.entries(resourcesByType).forEach(
           ([resourceType, resourcesById]) => {
             _updateResourcesForType(draft, index, resourceType, resourcesById);
@@ -802,7 +799,6 @@ const _updateResourcesForType = (draft, index, resourceType, resourcesById) => {
   _initializeResource(draft, resourceType);
   _initializeIndex(draft, resourceType);
   let newIndex = index.slice(0);
-  console.log("GOT HEREREEERERE");
   Object.entries(resourcesById).forEach(([id, resource]) => {
     // Partially update or insert resource
     _updateResource(draft, resourceType, id, resource);

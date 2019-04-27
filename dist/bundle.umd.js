@@ -5,7 +5,6 @@
 }(this, (function () { 'use strict';
 
   var updateResources = function updateResources(mutator, resourcesByType, index) {
-    console.log("*********" + resourcesByType);
     mutator({ type: "UPDATE_RESOURCES", resourcesByType: resourcesByType, index: index });
   };
 
@@ -777,8 +776,6 @@
           }
           break;
         case "UPDATE_RESOURCES":
-
-          console.log("GOT HEREREEERERE");
           Object.entries(resourcesByType).forEach(function (_ref) {
             var _ref2 = _slicedToArray$1(_ref, 2),
                 resourceType = _ref2[0],
@@ -816,7 +813,6 @@
     _initializeResource(draft, resourceType);
     _initializeIndex(draft, resourceType);
     var newIndex = index.slice(0);
-    console.log("GOT HEREREEERERE");
     Object.entries(resourcesById).forEach(function (_ref3) {
       var _ref4 = _slicedToArray$1(_ref3, 2),
           id = _ref4[0],
