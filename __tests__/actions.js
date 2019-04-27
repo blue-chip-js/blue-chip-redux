@@ -25,21 +25,18 @@ describe("Redux Actions", () => {
       test("dispatches UPDATE_RESOURCES for each ", () => {
         const tasksMergeResourcesAction = {
           index: [1, 2, 3],
-          resourceType: "tasks",
-          resourcesById: normalizedJsonApiTasksPayload,
+          resourcesByType: { tasks: normalizedJsonApiTasksPayload },
           type: "UPDATE_RESOURCES"
         };
 
         const checklistsMergeResourcesAction = {
           index: [1, 2, 3],
-          resourceType: "checklists",
-          resourcesById: normalizedJsonApiChecklistsPayload,
+          resourcesByType: { checklists: normalizedJsonApiChecklistsPayload },
           type: "UPDATE_RESOURCES"
         };
 
         actions.updateResources(jsonApiPayload);
-        expect(dispatch).toBeCalledWith(tasksMergeResourcesAction);
-        expect(dispatch).toBeCalledWith(checklistsMergeResourcesAction);
+        expect(dispatch).toMatchSnapshot();
       });
     });
 
@@ -47,21 +44,18 @@ describe("Redux Actions", () => {
       test("dispatches UPDATE_RESOURCES for each ", () => {
         const tasksMergeResourcesAction = {
           index: [],
-          resourceType: "tasks",
-          resourcesById: normalizedGraphQlTaskPayload,
+          resourcesByType: { tasks: normalizedGraphQlTaskPayload },
           type: "UPDATE_RESOURCES"
         };
 
         const checklistsMergeResourcesAction = {
           index: [],
-          resourceType: "checklists",
-          resourcesById: normalizedGraphQlChecklistPayload,
+          resourcesByType: { checklists: normalizedGraphQlChecklistPayload },
           type: "UPDATE_RESOURCES"
         };
 
         actions.updateResources(graphQlPayload);
-        expect(dispatch).toBeCalledWith(tasksMergeResourcesAction);
-        expect(dispatch).toBeCalledWith(checklistsMergeResourcesAction);
+        expect(dispatch).toMatchSnapshot();
       });
     });
   });

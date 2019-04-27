@@ -10,8 +10,7 @@ describe("Partial Update tests:", () => {
     });
     it("should update the store given a UPDATE_RESOURCES action", () => {
       const action = {
-        resourceType: "projects",
-        resourcesById: normalizedJsonProjectPayload,
+        resourcesByType: {projects: normalizedJsonProjectPayload},
         type: "UPDATE_RESOURCES",
         index: ["1"]
       };
@@ -21,16 +20,17 @@ describe("Partial Update tests:", () => {
 
     it("should only update the relationships given, belongsTo scenario", () => {
       const action = {
-        resourceType: "projects",
-        resourcesById: {
-          ...normalizedJsonProjectPayload,
-          "1": {
-            ...normalizedJsonProjectPayload["1"],
-            relationships: {
-              freightVendor: {
-                data: {
-                  id: "1",
-                  type: "vendors"
+        resourcesByType: {
+          projects: {
+            ...normalizedJsonProjectPayload,
+            "1": {
+              ...normalizedJsonProjectPayload["1"],
+              relationships: {
+                freightVendor: {
+                  data: {
+                    id: "1",
+                    type: "vendors"
+                  }
                 }
               }
             }
@@ -45,19 +45,20 @@ describe("Partial Update tests:", () => {
 
     it("should only update the relationships given, hasMany scenario", () => {
       const action = {
-        resourceType: "projects",
-        resourcesById: {
-          ...normalizedJsonProjectPayload,
-          "1": {
-            ...normalizedJsonProjectPayload["1"],
-            relationships: {
-              specs: {
-                data: [
-                  {
-                    id: "1",
-                    type: "specs"
-                  }
-                ]
+        resourcesByType: {
+          projects: {
+            ...normalizedJsonProjectPayload,
+            "1": {
+              ...normalizedJsonProjectPayload["1"],
+              relationships: {
+                specs: {
+                  data: [
+                    {
+                      id: "1",
+                      type: "specs"
+                    }
+                  ]
+                }
               }
             }
           }
@@ -72,44 +73,46 @@ describe("Partial Update tests:", () => {
     it("should only update the relationships given, no relationships sent scenario", () => {
       const relationships = undefined;
       const action = {
-        resourceType: "projects",
-        resourcesById: {
-          ...normalizedJsonProjectPayload,
-          "1": {
-            ...normalizedJsonProjectPayload["1"],
-            relationships
-          }
-        },
-        type: "UPDATE_RESOURCES",
-        index: ["1"]
+        resourcesByType: {
+          projects: {
+            ...normalizedJsonProjectPayload,
+            "1": {
+              ...normalizedJsonProjectPayload["1"],
+              relationships
+            }
+          },
+          type: "UPDATE_RESOURCES",
+          index: ["1"]
+        }
       };
       state = resourcesReducer(state, action);
-      delete action.resourcesById["1"].relationships;
-      expect("relationships" in action.resourcesById["1"]).toBeFalsy();
+      delete action.resourcesByType.projects["1"].relationships;
+      expect("relationships" in action.resourcesByType.projects["1"]).toBeFalsy();
       expect(state).toMatchSnapshot();
     });
 
     it("should add new relationship/update others sent", () => {
       const action = {
-        resourceType: "projects",
-        resourcesById: {
-          ...normalizedJsonProjectPayload,
-          "1": {
-            ...normalizedJsonProjectPayload["1"],
-            relationships: {
-              newThing: {
-                data: {
-                  id: "1",
-                  type: "newThing"
-                }
-              },
-              specs: {
-                data: [
-                  {
-                    id: "2",
-                    type: "specs"
+        resourcesByType: {
+          projects: {
+            ...normalizedJsonProjectPayload,
+            "1": {
+              ...normalizedJsonProjectPayload["1"],
+              relationships: {
+                newThing: {
+                  data: {
+                    id: "1",
+                    type: "newThing"
                   }
-                ]
+                },
+                specs: {
+                  data: [
+                    {
+                      id: "2",
+                      type: "specs"
+                    }
+                  ]
+                }
               }
             }
           }
@@ -123,17 +126,18 @@ describe("Partial Update tests:", () => {
 
     it("should allow null and empty when given", () => {
       const action = {
-        resourceType: "projects",
-        resourcesById: {
-          ...normalizedJsonProjectPayload,
-          "1": {
-            ...normalizedJsonProjectPayload["1"],
-            relationships: {
-              newThing: {
-                data: null
-              },
-              specs: {
-                data: []
+        resourcesByType: {
+          projects: {
+            ...normalizedJsonProjectPayload,
+            "1": {
+              ...normalizedJsonProjectPayload["1"],
+              relationships: {
+                newThing: {
+                  data: null
+                },
+                specs: {
+                  data: []
+                }
               }
             }
           }
@@ -147,17 +151,18 @@ describe("Partial Update tests:", () => {
 
     it("adds relationships in when previously not existing", () => {
       const action = {
-        resourceType: "testObjects",
-        resourcesById: {
-          "1": {
-            id: "1",
-            type: "testObjects",
-            attributes: {
-              testField1: "testValue"
-            },
-            relationships: {
-              newThing: {
-                data: {id: "1", type: "newThings"}
+        resourcesByType: {
+          testObjects: {
+            "1": {
+              id: "1",
+              type: "testObjects",
+              attributes: {
+                testField1: "testValue"
+              },
+              relationships: {
+                newThing: {
+                  data: {id: "1", type: "newThings"}
+                }
               }
             }
           }
@@ -166,7 +171,10 @@ describe("Partial Update tests:", () => {
         index: ["1"]
       };
       state = resourcesReducer(
-        {index: { testObjects: ["1"] }, testObjects: {"1": {id: "1", type: "testObjects"}}},
+        {
+          index: {testObjects: ["1"]},
+          testObjects: {"1": {id: "1", type: "testObjects"}}
+        },
         action
       );
       expect(state).toMatchSnapshot();
@@ -178,8 +186,7 @@ describe("Partial Update tests:", () => {
 
     it("should update the store given a UPDATE_RESOURCES action", () => {
       const action = {
-        resourceType: "projects",
-        resourcesById: normalizedJsonProjectPayload,
+        resourcesByType: {projects: normalizedJsonProjectPayload},
         type: "UPDATE_RESOURCES",
         index: ["1"]
       };
@@ -189,13 +196,14 @@ describe("Partial Update tests:", () => {
 
     it("should update only the attributes given", () => {
       const action = {
-        resourceType: "projects",
-        resourcesById: {
-          ...normalizedJsonProjectPayload,
-          "1": {
-            ...normalizedJsonProjectPayload["1"],
-            attributes: {
-              fundingDue: "Yearly"
+        resourcesByType: {
+          projects: {
+            ...normalizedJsonProjectPayload,
+            "1": {
+              ...normalizedJsonProjectPayload["1"],
+              attributes: {
+                fundingDue: "Yearly"
+              }
             }
           }
         },
@@ -208,14 +216,15 @@ describe("Partial Update tests:", () => {
 
     it("should add new attributes when given, update others given", () => {
       const action = {
-        resourceType: "projects",
-        resourcesById: {
-          ...normalizedJsonProjectPayload,
-          "1": {
-            ...normalizedJsonProjectPayload["1"],
-            attributes: {
-              fundingDue: "Annually",
-              newAttribute: "someValue"
+        resourcesByType: {
+          projects: {
+            ...normalizedJsonProjectPayload,
+            "1": {
+              ...normalizedJsonProjectPayload["1"],
+              attributes: {
+                fundingDue: "Annually",
+                newAttribute: "someValue"
+              }
             }
           }
         },

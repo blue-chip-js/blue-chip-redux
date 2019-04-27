@@ -1,45 +1,41 @@
 import {resourcesReducer} from "..";
-import normalizedJsonApiChecklistsPayload
-  from "../__testHelpers__/fixtures/normalizedJsonApiChecklistsPayload";
-import normalizedJsonApiTasksPayload
-  from "../__testHelpers__/fixtures/normalizedJsonApiTasksPayload";
-import hugeNormalizedJsonApiChecklistsPayload
-  from "../__testHelpers__/fixtures/hugeNormalizedJsonApiChecklistsPayload";
+import normalizedJsonApiChecklistsPayload from "../__testHelpers__/fixtures/normalizedJsonApiChecklistsPayload";
+import normalizedJsonApiTasksPayload from "../__testHelpers__/fixtures/normalizedJsonApiTasksPayload";
+import hugeNormalizedJsonApiChecklistsPayload from "../__testHelpers__/fixtures/hugeNormalizedJsonApiChecklistsPayload";
 
 describe("post reducer", () => {
   describe("UPDATE_RESOURCES", () => {
     it("should return the initial state", () => {
-      expect(resourcesReducer(undefined, {})).toEqual({ index: {} });
+      expect(resourcesReducer(undefined, {})).toEqual({index: {}});
     });
     it("should update the store given a UPDATE_RESOURCES action", () => {
       const checklistsMergeResourcesAction = {
-        resourceType: "tasks",
-        resourcesById: normalizedJsonApiChecklistsPayload,
+        resourcesByType: {tasks: normalizedJsonApiChecklistsPayload},
         type: "UPDATE_RESOURCES",
-        index: [6,5,4,3,2,1]
+        index: [6, 5, 4, 3, 2, 1]
       };
-      expect(resourcesReducer({ index: {} }, checklistsMergeResourcesAction)).toEqual({
+      expect(
+        resourcesReducer({index: {}}, checklistsMergeResourcesAction)
+      ).toEqual({
         tasks: normalizedJsonApiChecklistsPayload,
         index: {
-          tasks: [6,5,4,3,2,1]
+          tasks: [6, 5, 4, 3, 2, 1]
         }
       });
     });
     it("should handle multiple resources given multiple UPDATE_RESOURCES", () => {
       const checklistsMergeResourcesAction = {
-        resourceType: "checklists",
-        resourcesById: normalizedJsonApiChecklistsPayload,
+        resourcesByType: {checklists: normalizedJsonApiChecklistsPayload},
         type: "UPDATE_RESOURCES",
-        index: [1,2,3]
+        index: [1, 2, 3]
       };
       const tasksMergeResourcesAction = {
-        resourceType: "tasks",
-        resourcesById: normalizedJsonApiTasksPayload,
+        resourcesByType: {tasks: normalizedJsonApiTasksPayload},
         type: "UPDATE_RESOURCES",
-        index: [1,2,3,4,5,6]
+        index: [1, 2, 3, 4, 5, 6]
       };
       const firstUpdatedState = resourcesReducer(
-        { index: {} },
+        {index: {}},
         checklistsMergeResourcesAction
       );
       expect(
@@ -48,27 +44,26 @@ describe("post reducer", () => {
         checklists: normalizedJsonApiChecklistsPayload,
         tasks: normalizedJsonApiTasksPayload,
         index: {
-          checklists: [1,2,3],
-          tasks: [1,2,3,4,5,6],
+          checklists: [1, 2, 3],
+          tasks: [1, 2, 3, 4, 5, 6]
         }
       });
     });
     it("should handle multiple updates with the same resources", () => {
       const checklistsMergeResourcesAction = {
-        resourceType: "checklists",
-        resourcesById: normalizedJsonApiChecklistsPayload,
+        resourcesByType: {checklists: normalizedJsonApiChecklistsPayload},
         type: "UPDATE_RESOURCES",
-        index: [1,2,3],
+        index: [1, 2, 3]
       };
       const firstUpdatedState = resourcesReducer(
-        { index: { checklists: [3,2,1] } },
+        {index: {checklists: [3, 2, 1]}},
         checklistsMergeResourcesAction
       );
       expect(
         resourcesReducer(firstUpdatedState, checklistsMergeResourcesAction)
       ).toEqual({
         checklists: normalizedJsonApiChecklistsPayload,
-        index: { checklists: [3,2,1] }
+        index: {checklists: [3, 2, 1]}
       });
     });
     it("benchmark small payload", async () => {
@@ -102,15 +97,18 @@ describe("post reducer", () => {
 
       expect(resourcesReducer({index: {}}, updateAction)).toEqual({
         checklists: {[checklist.id]: checklist},
-        index: { checklists: [1] },
+        index: {checklists: [1]}
       });
       expect(
-        resourcesReducer({index: { checklists: [1] }}, {...updateAction, attributes: {name: "changed"}})
+        resourcesReducer(
+          {index: {checklists: [1]}},
+          {...updateAction, attributes: {name: "changed"}}
+        )
       ).toEqual({
         checklists: {
-          [checklist.id]: {...checklist, attributes: {name: "changed"}},
+          [checklist.id]: {...checklist, attributes: {name: "changed"}}
         },
-        index: { checklists: [1] },
+        index: {checklists: [1]}
       });
     });
 
@@ -135,12 +133,15 @@ describe("post reducer", () => {
       };
 
       expect(
-        resourcesReducer({index: { checklists: [2,1,3] }}, {...updateAction, attributes: {name: "changed"}})
+        resourcesReducer(
+          {index: {checklists: [2, 1, 3]}},
+          {...updateAction, attributes: {name: "changed"}}
+        )
       ).toEqual({
         checklists: {
-          [checklist.id]: {...checklist, attributes: {name: "changed"}},
+          [checklist.id]: {...checklist, attributes: {name: "changed"}}
         },
-        index: { checklists: [2,1,3] },
+        index: {checklists: [2, 1, 3]}
       });
     });
   });
@@ -150,7 +151,7 @@ describe("post reducer", () => {
       const initialState = {
         checklists: normalizedJsonApiChecklistsPayload,
         index: {
-          checklists: [1,2,3],
+          checklists: [1, 2, 3]
         }
       };
       const checklist = normalizedJsonApiChecklistsPayload[1];
@@ -173,7 +174,7 @@ describe("post reducer", () => {
       const initialState = {
         checklists: normalizedJsonApiChecklistsPayload,
         index: {
-          checklists: [1,2,3],
+          checklists: [1, 2, 3]
         }
       };
 
@@ -201,7 +202,7 @@ describe("post reducer", () => {
       const initialState = {
         checklists: normalizedJsonApiChecklistsPayload,
         index: {
-          checklists: [1,2,3],
+          checklists: [1, 2, 3]
         }
       };
 
@@ -213,8 +214,8 @@ describe("post reducer", () => {
       expect(state).toEqual({
         checklists: {},
         index: {
-          checklists: [],
-        },
+          checklists: []
+        }
       });
     });
 
@@ -223,8 +224,8 @@ describe("post reducer", () => {
         checklists: normalizedJsonApiChecklistsPayload,
         tasks: normalizedJsonApiTasksPayload,
         index: {
-          checklists: [1,2,3],
-          tasks: [1,2,3,4,5,6],
+          checklists: [1, 2, 3],
+          tasks: [1, 2, 3, 4, 5, 6]
         }
       };
 
@@ -238,8 +239,8 @@ describe("post reducer", () => {
         tasks: normalizedJsonApiTasksPayload,
         index: {
           checklists: [],
-          tasks: [1,2,3,4,5,6],
-        },
+          tasks: [1, 2, 3, 4, 5, 6]
+        }
       });
     });
 
@@ -248,8 +249,8 @@ describe("post reducer", () => {
         checklists: normalizedJsonApiChecklistsPayload,
         tasks: normalizedJsonApiTasksPayload,
         index: {
-          checklists: [1,2,3],
-          tasks: [1,2,3,4,5,6],
+          checklists: [1, 2, 3],
+          tasks: [1, 2, 3, 4, 5, 6]
         }
       };
 
@@ -263,8 +264,8 @@ describe("post reducer", () => {
         tasks: {},
         index: {
           checklists: [],
-          tasks: [],
-        },
+          tasks: []
+        }
       });
     });
 
@@ -273,8 +274,8 @@ describe("post reducer", () => {
         checklists: normalizedJsonApiChecklistsPayload,
         tasks: normalizedJsonApiTasksPayload,
         index: {
-          checklists: [1,2,3],
-          tasks: [1,2,3,4,5,6],
+          checklists: [1, 2, 3],
+          tasks: [1, 2, 3, 4, 5, 6]
         }
       };
 
@@ -283,8 +284,7 @@ describe("post reducer", () => {
       };
       const state = resourcesReducer(initialState, removeAction);
       expect(state).toEqual({
-        index: {
-        },
+        index: {}
       });
     });
   });
@@ -297,14 +297,13 @@ function smallPayloadReducerCall() {
     const array = Array(itterationCount).fill();
     array.forEach((n, index) => {
       const checklistsMergeResourcesAction = {
-        resourceType: "checklists",
-        resourcesById: normalizedJsonApiChecklistsPayload,
+        resourcesByType: {checklists: normalizedJsonApiChecklistsPayload},
         type: "UPDATE_RESOURCES",
-        index: [],
+        index: []
       };
 
       const firstUpdatedState = resourcesReducer(
-        { index: {} },
+        {index: {}},
         checklistsMergeResourcesAction
       );
       if (index === array.length - 1) resolve(firstUpdatedState);
@@ -319,14 +318,13 @@ function hugePayloadReducerCall() {
     const array = Array(itterationCount).fill();
     array.forEach((n, index) => {
       const checklistsMergeResourcesAction = {
-        resourceType: "checklists",
-        resourcesById: hugeNormalizedJsonApiChecklistsPayload,
+        resourcesByType: {checklists: hugeNormalizedJsonApiChecklistsPayload},
         type: "UPDATE_RESOURCES",
-        index: [],
+        index: []
       };
 
       const firstUpdatedState = resourcesReducer(
-        { index: {} },
+        {index: {}},
         checklistsMergeResourcesAction
       );
       if (index === array.length - 1) resolve();
