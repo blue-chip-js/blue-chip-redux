@@ -2,11 +2,9 @@ import {buildRelationships} from "./helpers";
 
 export const updateResources = (
   mutator,
-  resourceType,
-  resourcesById,
-  index
+  resourcesByType, index
 ) => {
-  mutator({type: "UPDATE_RESOURCES", resourceType, resourcesById, index});
+  mutator({type: "UPDATE_RESOURCES", resourcesByType, index});
 };
 
 export const updateResource = (

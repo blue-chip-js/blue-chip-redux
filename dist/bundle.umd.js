@@ -4,8 +4,8 @@
   (global.bundle = global.bundle || {}, global.bundle.js = factory());
 }(this, (function () { 'use strict';
 
-  var updateResources = function updateResources(mutator, resourceType, resourcesById, index) {
-    mutator({ type: "UPDATE_RESOURCES", resourceType: resourceType, resourcesById: resourcesById, index: index });
+  var updateResources = function updateResources(mutator, resourcesByType, index) {
+    mutator({ type: "UPDATE_RESOURCES", resourcesByType: resourcesByType, index: index });
   };
 
   var updateResource = function updateResource(mutator, _ref) {
@@ -746,11 +746,11 @@
         attributes = action.attributes,
         links = action.links,
         relationships = action.relationships,
-        resourcesById = action.resourcesById,
         resourceTypes = action.resourceTypes,
         resourceType = action.resourceType,
         resources = action.resources,
-        index = action.index;
+        index = action.index,
+        resourcesByType = action.resourcesByType;
 
     return produce(state, function (draft) {
       switch (type) {
@@ -776,27 +776,14 @@
           }
           break;
         case "UPDATE_RESOURCES":
-          _initializeResource(draft, resourceType);
-          _initializeIndex(draft, resourceType);
-          var newIndex = index.slice(0);
-          Object.entries(resourcesById).forEach(function (_ref) {
+          Object.entries(resourcesByType).forEach(function (_ref) {
             var _ref2 = _slicedToArray$1(_ref, 2),
-                id = _ref2[0],
-                resource = _ref2[1];
+                resourceType = _ref2[0],
+                resourcesById = _ref2[1];
 
-            // Partially update or insert resource
-            _updateResource(draft, resourceType, id, resource);
-
-            // Normalize the ids during findIndex to strings
-            var indexPosition = draft.index[resourceType].indexOf(resource.id);
-            // Remove from the new index order if it already exists (keeps original order on update)
-            if (indexPosition !== -1) {
-              newIndex = newIndex.filter(function (indexId) {
-                return indexId !== resource.id;
-              });
-            }
+            _updateResourcesForType(draft, index, resourceType, resourcesById);
           });
-          draft.index[resourceType] = draft.index[resourceType].concat(newIndex);
+
           break;
         case "REMOVE_RESOURCE_BY_ID":
           delete draft[resourceType][id];
@@ -821,6 +808,30 @@
       }
     });
   }
+
+  var _updateResourcesForType = function _updateResourcesForType(draft, index, resourceType, resourcesById) {
+    _initializeResource(draft, resourceType);
+    _initializeIndex(draft, resourceType);
+    var newIndex = index.slice(0);
+    Object.entries(resourcesById).forEach(function (_ref3) {
+      var _ref4 = _slicedToArray$1(_ref3, 2),
+          id = _ref4[0],
+          resource = _ref4[1];
+
+      // Partially update or insert resource
+      _updateResource(draft, resourceType, id, resource);
+
+      // Normalize the ids during findIndex to strings
+      var indexPosition = draft.index[resourceType].indexOf(resource.id);
+      // Remove from the new index order if it already exists (keeps original order on update)
+      if (indexPosition !== -1) {
+        newIndex = newIndex.filter(function (indexId) {
+          return indexId !== resource.id;
+        });
+      }
+    });
+    draft.index[resourceType] = draft.index[resourceType].concat(newIndex);
+  };
 
   var _updateResource = function _updateResource(draft, resourceType, id, newResource) {
     if (draft[resourceType][id]) {

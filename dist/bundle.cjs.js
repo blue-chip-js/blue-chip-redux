@@ -2,11 +2,9 @@
 
 const updateResources = (
   mutator,
-  resourceType,
-  resourcesById,
-  index
+  resourcesByType, index
 ) => {
-  mutator({type: "UPDATE_RESOURCES", resourceType, resourcesById, index});
+  mutator({type: "UPDATE_RESOURCES", resourcesByType, index});
 };
 
 const updateResource = (
@@ -736,11 +734,11 @@ function resourcesReducer(state = initialState, action) {
     attributes,
     links,
     relationships,
-    resourcesById,
     resourceTypes,
     resourceType,
     resources,
-    index
+    index, 
+    resourcesByType,
   } = action;
   return produce(state, draft => {
     switch (type) {
@@ -757,7 +755,7 @@ function resourcesReducer(state = initialState, action) {
         };
 
         // Partially update or insert resource
-        _updateResource(draft, resourceType, id, resource);  
+        _updateResource(draft, resourceType, id, resource);
 
         const indexPosition = draft.index[resourceType].indexOf(id);
         // Add to index if it does not yet exist
@@ -766,21 +764,12 @@ function resourcesReducer(state = initialState, action) {
         }
         break;
       case "UPDATE_RESOURCES":
-        _initializeResource(draft, resourceType);
-        _initializeIndex(draft, resourceType);
-        let newIndex = index.slice(0);
-        Object.entries(resourcesById).forEach(([id, resource]) => {
-          // Partially update or insert resource
-          _updateResource(draft, resourceType, id, resource);
-          
-          // Normalize the ids during findIndex to strings
-          const indexPosition = draft.index[resourceType].indexOf(resource.id);
-          // Remove from the new index order if it already exists (keeps original order on update)
-          if (indexPosition !== -1) {
-            newIndex = newIndex.filter(indexId => indexId !== resource.id);
+        Object.entries(resourcesByType).forEach(
+          ([resourceType, resourcesById]) => {
+            _updateResourcesForType(draft, index, resourceType, resourcesById);
           }
-        });
-        draft.index[resourceType] = draft.index[resourceType].concat(newIndex);
+        );
+
         break;
       case "REMOVE_RESOURCE_BY_ID":
         delete draft[resourceType][id];
@@ -806,10 +795,28 @@ function resourcesReducer(state = initialState, action) {
   });
 }
 
+const _updateResourcesForType = (draft, index, resourceType, resourcesById) => {
+  _initializeResource(draft, resourceType);
+  _initializeIndex(draft, resourceType);
+  let newIndex = index.slice(0);
+  Object.entries(resourcesById).forEach(([id, resource]) => {
+    // Partially update or insert resource
+    _updateResource(draft, resourceType, id, resource);
+
+    // Normalize the ids during findIndex to strings
+    const indexPosition = draft.index[resourceType].indexOf(resource.id);
+    // Remove from the new index order if it already exists (keeps original order on update)
+    if (indexPosition !== -1) {
+      newIndex = newIndex.filter(indexId => indexId !== resource.id);
+    }
+  });
+  draft.index[resourceType] = draft.index[resourceType].concat(newIndex);
+};
+
 const _updateResource = (draft, resourceType, id, newResource) => {
   if (draft[resourceType][id]) {
     const draftResource = draft[resourceType][id];
-    
+
     _updateProperty("attributes", draftResource, newResource);
     _updateProperty("relationships", draftResource, newResource);
     _updateProperty("links", draftResource, newResource);

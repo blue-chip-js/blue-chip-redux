@@ -1,0 +1,411 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Redux Actions updateResources GraphQl dispatches UPDATE_RESOURCES for each  1`] = `
+[MockFunction dispatch] {
+  "calls": Array [
+    Array [
+      Object {
+        "index": Array [
+          1,
+          2,
+          3,
+        ],
+        "resourcesByType": Object {
+          "checklists": Object {
+            "1": Object {
+              "attributes": Object {
+                "name": "Onboarding Rest",
+              },
+              "id": 1,
+              "links": Object {
+                "self": "http://example.com/checklists/1",
+              },
+              "relationships": Object {
+                "tasks": Object {
+                  "data": Array [
+                    Object {
+                      "id": 1,
+                      "type": "tasks",
+                    },
+                    Object {
+                      "id": 2,
+                      "type": "tasks",
+                    },
+                  ],
+                  "links": Object {
+                    "related": "http://example.com/checklists/1/tasks",
+                    "self": "http://example.com/checklists/1/relationships/tasks",
+                  },
+                },
+              },
+              "type": "checklists",
+            },
+            "2": Object {
+              "attributes": Object {
+                "name": "Project Audit Rest",
+              },
+              "id": 2,
+              "links": Object {
+                "self": "http://example.com/checklists/2",
+              },
+              "relationships": Object {
+                "tasks": Object {
+                  "data": Array [
+                    Object {
+                      "id": 3,
+                      "type": "tasks",
+                    },
+                    Object {
+                      "id": 4,
+                      "type": "tasks",
+                    },
+                  ],
+                  "links": Object {
+                    "related": "http://example.com/checklists/2/tasks",
+                    "self": "http://example.com/checklists/2/relationships/tasks",
+                  },
+                },
+              },
+              "type": "checklists",
+            },
+            "3": Object {
+              "attributes": Object {
+                "name": "QA Checklist Rest",
+              },
+              "id": 3,
+              "links": Object {
+                "self": "http://example.com/checklists/3",
+              },
+              "relationships": Object {
+                "tasks": Object {
+                  "data": Array [
+                    Object {
+                      "id": 5,
+                      "type": "tasks",
+                    },
+                    Object {
+                      "id": 6,
+                      "type": "tasks",
+                    },
+                  ],
+                  "links": Object {
+                    "related": "http://example.com/checklists/3/tasks",
+                    "self": "http://example.com/checklists/3/relationships/tasks",
+                  },
+                },
+              },
+              "type": "checklists",
+            },
+          },
+          "tasks": Object {
+            "1": Object {
+              "attributes": Object {
+                "description": "Onboarding REST 1",
+              },
+              "id": 1,
+              "links": Object {
+                "self": "http://example.com/tasks/1",
+              },
+              "type": "tasks",
+            },
+            "2": Object {
+              "attributes": Object {
+                "description": "Onboarding REST 2",
+              },
+              "id": 2,
+              "links": Object {
+                "self": "http://example.com/tasks/2",
+              },
+              "type": "tasks",
+            },
+            "3": Object {
+              "attributes": Object {
+                "description": "Project Audit Rest 3",
+              },
+              "id": 3,
+              "links": Object {
+                "self": "http://example.com/tasks/3",
+              },
+              "type": "tasks",
+            },
+            "4": Object {
+              "attributes": Object {
+                "description": "Project Audit Rest 4",
+              },
+              "id": 4,
+              "links": Object {
+                "self": "http://example.com/tasks/4",
+              },
+              "type": "tasks",
+            },
+            "5": Object {
+              "attributes": Object {
+                "description": "QA Checklist Rest 5",
+              },
+              "id": 5,
+              "links": Object {
+                "self": "http://example.com/tasks/5",
+              },
+              "type": "tasks",
+            },
+            "6": Object {
+              "attributes": Object {
+                "description": "QA Checklist Rest 6",
+              },
+              "id": 6,
+              "links": Object {
+                "self": "http://example.com/tasks/6",
+              },
+              "type": "tasks",
+            },
+          },
+        },
+        "type": "UPDATE_RESOURCES",
+      },
+    ],
+    Array [
+      Object {
+        "index": Array [],
+        "resourcesByType": Object {
+          "checklists": Object {
+            "4": Object {
+              "id": 4,
+              "name": "Onboarding GraphQL",
+              "tasks": Array [
+                7,
+                8,
+              ],
+            },
+            "5": Object {
+              "id": 5,
+              "name": "Project Audit GraphQL",
+              "tasks": Array [
+                9,
+                10,
+              ],
+            },
+            "6": Object {
+              "id": 6,
+              "name": "QA Checklist GraphQL",
+              "tasks": Array [
+                11,
+                12,
+              ],
+            },
+          },
+          "tasks": Object {
+            "10": Object {
+              "description": "Project Audit Graph 10",
+              "id": 10,
+            },
+            "11": Object {
+              "description": "QA Checklist Graph 11",
+              "id": 11,
+            },
+            "12": Object {
+              "description": "QA Checklist Graph 12",
+              "id": 12,
+            },
+            "7": Object {
+              "description": "Onboarding Graph 7",
+              "id": 7,
+            },
+            "8": Object {
+              "description": "Onboarding Graph 8",
+              "id": 8,
+            },
+            "9": Object {
+              "description": "Project Audit Graph 9",
+              "id": 9,
+            },
+          },
+        },
+        "type": "UPDATE_RESOURCES",
+      },
+    ],
+  ],
+  "results": Array [
+    Object {
+      "isThrow": false,
+      "value": undefined,
+    },
+    Object {
+      "isThrow": false,
+      "value": undefined,
+    },
+  ],
+}
+`;
+
+exports[`Redux Actions updateResources JsonApi dispatches UPDATE_RESOURCES for each  1`] = `
+[MockFunction dispatch] {
+  "calls": Array [
+    Array [
+      Object {
+        "index": Array [
+          1,
+          2,
+          3,
+        ],
+        "resourcesByType": Object {
+          "checklists": Object {
+            "1": Object {
+              "attributes": Object {
+                "name": "Onboarding Rest",
+              },
+              "id": 1,
+              "links": Object {
+                "self": "http://example.com/checklists/1",
+              },
+              "relationships": Object {
+                "tasks": Object {
+                  "data": Array [
+                    Object {
+                      "id": 1,
+                      "type": "tasks",
+                    },
+                    Object {
+                      "id": 2,
+                      "type": "tasks",
+                    },
+                  ],
+                  "links": Object {
+                    "related": "http://example.com/checklists/1/tasks",
+                    "self": "http://example.com/checklists/1/relationships/tasks",
+                  },
+                },
+              },
+              "type": "checklists",
+            },
+            "2": Object {
+              "attributes": Object {
+                "name": "Project Audit Rest",
+              },
+              "id": 2,
+              "links": Object {
+                "self": "http://example.com/checklists/2",
+              },
+              "relationships": Object {
+                "tasks": Object {
+                  "data": Array [
+                    Object {
+                      "id": 3,
+                      "type": "tasks",
+                    },
+                    Object {
+                      "id": 4,
+                      "type": "tasks",
+                    },
+                  ],
+                  "links": Object {
+                    "related": "http://example.com/checklists/2/tasks",
+                    "self": "http://example.com/checklists/2/relationships/tasks",
+                  },
+                },
+              },
+              "type": "checklists",
+            },
+            "3": Object {
+              "attributes": Object {
+                "name": "QA Checklist Rest",
+              },
+              "id": 3,
+              "links": Object {
+                "self": "http://example.com/checklists/3",
+              },
+              "relationships": Object {
+                "tasks": Object {
+                  "data": Array [
+                    Object {
+                      "id": 5,
+                      "type": "tasks",
+                    },
+                    Object {
+                      "id": 6,
+                      "type": "tasks",
+                    },
+                  ],
+                  "links": Object {
+                    "related": "http://example.com/checklists/3/tasks",
+                    "self": "http://example.com/checklists/3/relationships/tasks",
+                  },
+                },
+              },
+              "type": "checklists",
+            },
+          },
+          "tasks": Object {
+            "1": Object {
+              "attributes": Object {
+                "description": "Onboarding REST 1",
+              },
+              "id": 1,
+              "links": Object {
+                "self": "http://example.com/tasks/1",
+              },
+              "type": "tasks",
+            },
+            "2": Object {
+              "attributes": Object {
+                "description": "Onboarding REST 2",
+              },
+              "id": 2,
+              "links": Object {
+                "self": "http://example.com/tasks/2",
+              },
+              "type": "tasks",
+            },
+            "3": Object {
+              "attributes": Object {
+                "description": "Project Audit Rest 3",
+              },
+              "id": 3,
+              "links": Object {
+                "self": "http://example.com/tasks/3",
+              },
+              "type": "tasks",
+            },
+            "4": Object {
+              "attributes": Object {
+                "description": "Project Audit Rest 4",
+              },
+              "id": 4,
+              "links": Object {
+                "self": "http://example.com/tasks/4",
+              },
+              "type": "tasks",
+            },
+            "5": Object {
+              "attributes": Object {
+                "description": "QA Checklist Rest 5",
+              },
+              "id": 5,
+              "links": Object {
+                "self": "http://example.com/tasks/5",
+              },
+              "type": "tasks",
+            },
+            "6": Object {
+              "attributes": Object {
+                "description": "QA Checklist Rest 6",
+              },
+              "id": 6,
+              "links": Object {
+                "self": "http://example.com/tasks/6",
+              },
+              "type": "tasks",
+            },
+          },
+        },
+        "type": "UPDATE_RESOURCES",
+      },
+    ],
+  ],
+  "results": Array [
+    Object {
+      "isThrow": false,
+      "value": undefined,
+    },
+  ],
+}
+`;
